@@ -16,4 +16,8 @@ public class AppTest {
     public void shouldAnswerWithTrue() {
         assertTrue(true);
     }
+    
+    public static void main(String[] args) {
+    	System.out.println("Program is running.");
+    }
 }
