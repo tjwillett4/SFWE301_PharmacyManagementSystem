@@ -1,4 +1,5 @@
 package BackEnd;
+
 //account info object.
 
 /*
@@ -8,13 +9,32 @@ package BackEnd;
  */
 
 public class Account {
-	String nameFirst, nameMid, nameLast;
-	String phoneNum;
-	String address;
-	
-	//Assign role. likely from a class type. 
-	
-	
+	//basic account info. 
+	private String nameFirst, nameMid, nameLast;
+
+	public String getNameFirst() {
+		return nameFirst;
+	}
+
+	public void setNameFirst(String nameFirst) {
+		this.nameFirst = nameFirst;
+	}
+
+	public String getNameMid() {
+		return nameMid;
+	}
+
+	public void setNameMid(String nameMid) {
+		this.nameMid = nameMid;
+	}
+
+	public String getNameLast() {
+		return nameLast;
+	}
+
+	public void setNameLast(String nameLast) {
+		this.nameLast = nameLast;
+	}
 	
 	
 	
