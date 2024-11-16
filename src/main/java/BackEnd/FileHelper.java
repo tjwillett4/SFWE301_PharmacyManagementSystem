@@ -23,10 +23,14 @@ import javax.swing.JOptionPane;
 
 public class FileHelper {
 	public final static String DATA_DIR = System.getenv("APPDATA") + "//pharmacy";
-	public final static String ACCOUNT_STORAGE_FILE = "/AccountStorage.xml";
+	public final static String ACCOUNT_STORAGE_FILE = "/CustomerStorage.xml";
+	public final static String EMPLOYEE_STORAGE_FILE = "/EmployeeStorage.xml";
 	
 	//return of property/database files.
-	public static Path findAccountsFile() throws Exception{
+	public static Path findEmployeeFile() throws Exception {
+		return findPropertiesFile(EMPLOYEE_STORAGE_FILE);
+	}
+	public static Path findCustomerFile() throws Exception{
 		return findPropertiesFile(ACCOUNT_STORAGE_FILE);
 	}
 	private static Path findPropertiesFile(String dataFile)  throws Exception {

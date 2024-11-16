@@ -11,15 +11,10 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Random;
 
 import org.jasypt.encryption.pbe.StandardPBEByteEncryptor;
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
-
-import BackEnd.Account;
-import BackEnd.FileHelper;
-import BackEnd.AccountHandling;
 
 
 /*
@@ -72,54 +67,37 @@ public class Serializer {
 	
 	//TODO!
 	/* ACCOUNT_INFO HANDLING */
-	public static Account encryptAccount(Account account) throws Exception{
-		String password = account.getSecCodePass();
+	public static Employee encryptEmployee(Employee emp) throws Exception{
+		String password = emp.getSecCodePass();
 		StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
 		encryptor.setPassword(password);                         // we HAVE TO set a password
 		
-		return new Account();
-		/*TODO: Create a new account object that is encrypted.
-		return new Account(
-				account.getName(),
-				encryptor.encrypt(account.getPassword()),
-				account.getSecQ1(),
-				encryptor.encrypt(account.getSecAns1()),
-				account.getSecQ2(),
-				encryptor.encrypt(account.getSecAns2()),
-				account.getSecQ3(),
-				encryptor.encrypt(account.getSecAns3()),
-				encryptor.encrypt(account.getHomeDirectory()),
-				encryptString(account.getSecCodePass(), account.getPassword()),
-				encryptString(account.getSecCodeAns(), account.allSecurityAnswers())
+		return new Employee(
+				emp.getNameFirst(),
+				emp.getUsername(),
+				encryptor.encrypt(emp.getPassword()),
+				encryptString(emp.getSecCodePass(), emp.getPassword())
 				);
-		*/
 	}
-	public static Account decryptAccount(Account account, String password) throws Exception {
+	public static Employee decryptEmployee(Employee account, String password) throws Exception {
 		StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
 		encryptor.setPassword(password);                         // we HAVE TO set a password
 		
-		return new Account();
-		/* TODO: Create a new account object from the decrypted info. 
-		Account acc = new Account(
-				account.getName(),
+		return new Employee(
+				account.getNameFirst(),
+				account.getUsername(),
 				encryptor.decrypt(account.getPassword()),
-				account.getSecQ1(),
-				encryptor.decrypt(account.getSecAns1()),
-				account.getSecQ2(),
-				encryptor.decrypt(account.getSecAns2()),
-				account.getSecQ3(),
-				encryptor.decrypt(account.getSecAns3()),
-				encryptor.decrypt(account.getHomeDirectory()),
-				"",""
+				decryptString(account.getSecCodePass(), account.getPassword())
 				);
-		acc.setSecCodePass(decryptString(account.getSecCodePass(), acc.getPassword()));
-		acc.setSecCodeAns(decryptString(account.getSecCodeAns(), acc.allSecurityAnswers()));
-		return acc;
-		*/
+		
 	}
 	
-	
-	
+	public static Customer encryptCustomer(Customer account) throws Exception{
+		return new Customer();
+	}
+	public static Customer decryptEmployee(Customer account, String password) throws Exception {
+		return new Customer();
+	}
 
 	
 	

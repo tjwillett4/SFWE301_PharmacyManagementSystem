@@ -1,46 +1,10 @@
 package BackEnd;
 
-/* TODO: create a manager key that can open up customer accounts. 
- * 
- */
-
-/*
- * ACCOUNT DATABASE
- * Note: This is of course not the database. that will be an encrypted text file. 
- * The system shall store all created accounts in a secure location. Individual account types shall have different access 
- * permissions to this database. (i.e. only certain roles may create accounts and customer roles may only read their own data.)
- * 
- * ACCOUNT HANDLING
- * The system shall allow Account Handling to serve as the communication between front end and back end to access the account database, returning restricted information based on the user/requester's permissions.
- * Shall communicate with the Account Database and Encryption. 
- * 
- * ACCOUNT DELETION
- * The system shall allow only certain user types to update account information. 
- * All user types can update their account's password while logged in, but only the pharmacy manager can update a user's account type.
- * 
- * ACCOUNT LOCK OUT:
- * The system shall lock any account that performs 5 unsuccessful login attempts. 
- * When an account is locked, no further login attempts are allowed until the account is manually unlocked by the pharmacy manager.
- * 
- * UNLOCK ACCOUNT: 
- * The system shall allow only the pharmacy manager to unlock an account that has been locked due to unsuccessful login attempts.
- * 
- * MANAGEMENT USER ACCOUNT CREATION:
- * The system shall allow for the pharmacy manager to add new user accounts to the system and assign them with a user type.
- */
-
-//Handle account creation, deletion, and editing. 
-//MUST verify accessing account role in the backend. 
-
-import BackEnd.Serializer;
-
-import BackEnd.Account;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.InaccessibleObjectException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,42 +21,42 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
  */
 
 public class AccountHandling {
-	/* ACCOUNT ACTIONS */
+	/* EMPLOYEE ACCOUNTS */
 	//adds account to account database. 
-	public static void addAccount(Account newAccount) throws Exception{
+	public static void addEmployeeAccount(Employee newEmployee) throws Exception{
 		//serialize account
-		Account acc = Serializer.encryptAccount(newAccount);
+		Employee acc = Serializer.encryptEmployee(newEmployee);
 		
 		//Send off to update storage
-		writeAccount(acc);
+		writeAccount(acc, Employee.class);
 	}
 	
 	//finds and returns Account. Returns null if account is not found.
-	public static Account logIn(String username, String password) throws Exception{
-		/*
+	public static Employee logIn(String username, String password) throws Exception{
+		
 		//get the accounts. 
-		ArrayList<Account> accounts = readAccountStorage(FileHelper.findAccountsFile());
+		ArrayList<Employee> accounts = readAccountStorage(FileHelper.findEmployeeFile(), Employee.class);
 		
 		//See if the accounts list contains the username. 
-		for (Account acc : accounts) {
+		for (Employee acc : accounts) {
 			//account found
 			if (acc.getUsername().equals(username)) {
 				String secCode = Serializer.decryptString(acc.getSecCodePass(), password);
 				if (Serializer.decryptString(acc.getPassword(), secCode).equals(password)) {
-					return Serializer.decryptAccount(acc, secCode);	
+					return Serializer.decryptEmployee(acc, secCode);	
 				}
 			}
-		}*/
+		}
 		return null;
 	}
 	
 	//check if the account exists based off a user name. 
-	public static Boolean accountExists(String username) throws Exception {
-		ArrayList<Account> accounts = readAccountStorage(FileHelper.findAccountsFile());
+	public static Boolean employeeExists(String username) throws Exception {
+		ArrayList<Employee> employees = readAccountStorage(FileHelper.findEmployeeFile(), Employee.class);
 		
 		//See if the accounts list contains the username. 
-		for (Account acc : accounts) {
-			if (acc.getUsername().equals(username)) {
+		for (Employee emp : employees) {
+			if (emp.getUsername().equals(username)) {
 				return true;
 			}
 		}
@@ -101,19 +65,19 @@ public class AccountHandling {
 	}
 	
 	//updates a user account based on username. Verification done in controller.
-	public static void changeAccount(String username, Account acc) throws Exception {
+	public static void changeEmployeeAccount(String username, Employee acc) throws Exception {
 		//get accounts list:
-		ArrayList<Account> accounts = readAccountStorage(FileHelper.findAccountsFile());
+		ArrayList<Employee> accounts = readAccountStorage(FileHelper.findEmployeeFile(), Employee.class);
 		
 		//find the account
-		for (Account a : accounts) {
+		for (Employee a : accounts) {
 			if (a.getUsername().equals(username)) {
-				accounts.set(accounts.indexOf(a), Serializer.encryptAccount(acc));
+				accounts.set(accounts.indexOf(a), Serializer.encryptEmployee(acc));
 				break;
 			}
 		}
 		//update
-		AccountHandling.writeAccount(accounts);
+		AccountHandling.writeAccount(accounts, Employee.class);
 	}
 
 	//TODO
@@ -125,11 +89,12 @@ public class AccountHandling {
 	
 	/* ACCOUNT FILE HANDLING */
 	//writes an ecrypted Account object to storage. 
-	private static void writeAccount(Account encryptedAccount) throws Exception {
+	private static <T> void writeAccount(T encryptedAccount, Class<T> classType) throws Exception {
 		//Get file
 		Path p;
 		try {
-			p = FileHelper.findAccountsFile();
+			//either customer or employee file. 
+			p = classType == Customer.class ? FileHelper.findCustomerFile() : FileHelper.findEmployeeFile();
 		} catch (Exception e) {
 			//This could be due to different platforms such as mac/linux. Addapt for these.
 			e.printStackTrace();
@@ -139,8 +104,8 @@ public class AccountHandling {
 		mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 		
 		//Get the current list of accounts and add the new one to it.
-		ArrayList<Account> accounts = readAccountStorage(p);
-		accounts.add(encryptedAccount);
+		ArrayList<T> accounts = (ArrayList<T>) readAccountStorage(p, classType);
+		accounts.add( (T) encryptedAccount);
 		
 		//rewrite the file with the new account added.
 		try {
@@ -152,11 +117,12 @@ public class AccountHandling {
 	}
 
 	//writes an ecrypted Account LIST to storage. 
-	private static void writeAccount(ArrayList<Account> encryptedList) throws Exception {
+	private static <T> void writeAccount(ArrayList<T> encryptedList, Class<T> classType) throws Exception {
 		//Get file
 		Path p;
 		try {
-			p = FileHelper.findAccountsFile();
+			//either customer or employee file. 
+			p = classType == Customer.class ? FileHelper.findCustomerFile() : FileHelper.findEmployeeFile();
 		} catch (Exception e) {
 			//This could be due to different platforms such as mac/linux. Addapt for these.
 			e.printStackTrace();
@@ -175,20 +141,20 @@ public class AccountHandling {
 	}
 	
 	//retrieves all the Account's stored in storage. 
-	public static ArrayList<Account> readAccountStorage(Path p) throws Exception{
+	public static <T> ArrayList<T> readAccountStorage(Path p, Class<T> classType) throws Exception{
 		//Check that the file exists. 
 		if(!Files.exists(p))
 			throw new Exception("Cannot load settings because the settings file path could not be loaded.");
 		
 		//If the file is empty, return an empty list. 
 		if (p.toFile().length() == 0)
-			return new ArrayList<Account>();
+			return new ArrayList<T>();
 		
 		//Read the file into an array list.
 		try {
 			ObjectMapper mapper = new XmlMapper(); 
-			TypeReference<ArrayList<Account>> typeRef = new TypeReference<ArrayList<Account>>() {};
-			ArrayList<Account> accounts = mapper.readValue(Files.newInputStream(p), typeRef);
+			TypeReference<ArrayList<T>> typeRef = new TypeReference<ArrayList<T>>() {};
+			ArrayList<T> accounts = mapper.readValue(Files.newInputStream(p), typeRef);
 			return accounts;
 		} catch(FileNotFoundException e1) {
 			e1.printStackTrace();
@@ -210,7 +176,5 @@ public class AccountHandling {
 			throw new Exception("Something went wrong while trying to load the selected settings file."); 
 		}
 	}
-	
 
-	
 }
