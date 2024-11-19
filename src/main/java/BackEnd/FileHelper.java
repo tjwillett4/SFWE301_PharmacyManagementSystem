@@ -25,8 +25,13 @@ public class FileHelper {
 	public final static String DATA_DIR = System.getenv("APPDATA") + "//pharmacy";
 	public final static String ACCOUNT_STORAGE_FILE = "/CustomerStorage.xml";
 	public final static String EMPLOYEE_STORAGE_FILE = "/EmployeeStorage.xml";
+	public final static String PHARMACY_INVENTORY_FILE = "/PharmacyInventory.xml";
+	
 	
 	//return of property/database files.
+	public static Path findPharmacyInventoryFile() throws Exception {
+		return findPropertiesFile(PHARMACY_INVENTORY_FILE);
+	}
 	public static Path findEmployeeFile() throws Exception {
 		return findPropertiesFile(EMPLOYEE_STORAGE_FILE);
 	}
