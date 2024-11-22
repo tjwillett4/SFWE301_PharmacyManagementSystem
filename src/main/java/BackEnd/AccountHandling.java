@@ -28,14 +28,14 @@ public class AccountHandling {
 		Employee acc = Serializer.encryptEmployee(newEmployee);
 		
 		//Send off to update storage
-		writeAccount(acc, Employee.class);
+		writeEmployee(acc);
 	}
 	
 	//finds and returns Account. Returns null if account is not found.
 	public static Employee logIn(String username, String password) throws Exception{
 		
 		//get the accounts. 
-		ArrayList<Employee> accounts = readAccountStorage(FileHelper.findEmployeeFile(), Employee.class);
+		ArrayList<Employee> accounts = readEmployeeStorage(FileHelper.findEmployeeFile());
 		
 		//See if the accounts list contains the username. 
 		for (Employee acc : accounts) {
@@ -52,7 +52,7 @@ public class AccountHandling {
 	
 	//check if the account exists based off a user name. 
 	public static Boolean employeeExists(String username) throws Exception {
-		ArrayList<Employee> employees = readAccountStorage(FileHelper.findEmployeeFile(), Employee.class);
+		ArrayList<Employee> employees = readEmployeeStorage(FileHelper.findEmployeeFile());
 		
 		//See if the accounts list contains the username. 
 		for (Employee emp : employees) {
@@ -67,7 +67,7 @@ public class AccountHandling {
 	//updates a user account based on username. Verification done in controller.
 	public static void changeEmployeeAccount(String username, Employee acc) throws Exception {
 		//get accounts list:
-		ArrayList<Employee> accounts = readAccountStorage(FileHelper.findEmployeeFile(), Employee.class);
+		ArrayList<Employee> accounts = readEmployeeStorage(FileHelper.findEmployeeFile());
 		
 		//find the account
 		for (Employee a : accounts) {
@@ -89,23 +89,15 @@ public class AccountHandling {
 	
 	/* ACCOUNT FILE HANDLING */
 	//writes an ecrypted Account object to storage. 
-	private static <T> void writeAccount(T encryptedAccount, Class<T> classType) throws Exception {
+	private static void writeEmployee(Employee encryptedAccount) throws Exception {
 		//Get file
-		Path p;
-		try {
-			//either customer or employee file. 
-			p = classType == Customer.class ? FileHelper.findCustomerFile() : FileHelper.findEmployeeFile();
-		} catch (Exception e) {
-			//This could be due to different platforms such as mac/linux. Addapt for these.
-			e.printStackTrace();
-			throw new Exception("Error finding or creating file! " + e);
-		}
+		Path p = FileHelper.findEmployeeFile();
 		ObjectMapper mapper = new XmlMapper();
 		mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 		
 		//Get the current list of accounts and add the new one to it.
-		ArrayList<T> accounts = (ArrayList<T>) readAccountStorage(p, classType);
-		accounts.add( (T) encryptedAccount);
+		ArrayList<Employee> accounts =  readEmployeeStorage(p);
+		accounts.add(encryptedAccount);
 		
 		//rewrite the file with the new account added.
 		try {
@@ -141,20 +133,20 @@ public class AccountHandling {
 	}
 	
 	//retrieves all the Account's stored in storage. 
-	public static <T> ArrayList<T> readAccountStorage(Path p, Class<T> classType) throws Exception{
+	public static ArrayList<Employee> readEmployeeStorage(Path p) throws Exception{
 		//Check that the file exists. 
 		if(!Files.exists(p))
 			throw new Exception("Cannot load settings because the settings file path could not be loaded.");
 		
 		//If the file is empty, return an empty list. 
 		if (p.toFile().length() == 0)
-			return new ArrayList<T>();
+			return new ArrayList<Employee>();
 		
 		//Read the file into an array list.
 		try {
 			ObjectMapper mapper = new XmlMapper(); 
-			TypeReference<ArrayList<T>> typeRef = new TypeReference<ArrayList<T>>() {};
-			ArrayList<T> accounts = mapper.readValue(Files.newInputStream(p), typeRef);
+			TypeReference<ArrayList<Employee>> typeRef = new TypeReference<ArrayList<Employee>>() {};
+			ArrayList<Employee> accounts = mapper.readValue(Files.newInputStream(p), typeRef);
 			return accounts;
 		} catch(FileNotFoundException e1) {
 			e1.printStackTrace();
