@@ -13,7 +13,7 @@ public class Employee extends Account{
 	//to access databases
 	private String accountsPasscode = "";
 	
-	
+	public Employee() {};
 	
 	public Employee(String firstName, String user, String p, String secPass) {
 		this.setNameFirst(firstName);

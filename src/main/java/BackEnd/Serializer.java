@@ -87,7 +87,8 @@ public class Serializer {
 				account.getNameFirst(),
 				account.getUsername(),
 				encryptor.decrypt(account.getPassword()),
-				decryptString(account.getSecCodePass(), account.getPassword())
+				password
+				//decryptString(account.getSecCodePass(), account.getPassword())
 				);
 		
 	}
