@@ -1,5 +1,9 @@
 package Prescriptions;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /*
  * This object will store drug or allergy interactions, tied to the base medication. 
  * "interactionWith" is the drug or allergy to be concerned with.
@@ -13,10 +17,29 @@ package Prescriptions;
 
 public class DrugInteraction {
 	String interactionWith;
-	String sideEffects;
+	ArrayList<String> sideEffects;
 	
-	public DrugInteraction(String interactionWith, String sideEffects) {
-		this.interactionWith = interactionWith;
+	public DrugInteraction() {}
+	public DrugInteraction(String name, ArrayList<String> sideEffects) {
+		this.interactionWith = name;
+		this.sideEffects = sideEffects;
+	}
+	public DrugInteraction(String name, String[] sideEffects) {
+		this.interactionWith = name;
+		this.sideEffects.addAll(Arrays.asList(sideEffects));
+	}
+	public DrugInteraction(String name, List<String> sideEffects) {
+		this.interactionWith = name;
+		this.sideEffects = new ArrayList<String>();
+		this.sideEffects.addAll(sideEffects);
+	}
+	
+	
+
+	public ArrayList<String> getSideEffects() {
+		return sideEffects;
+	}
+	public void setSideEffects(ArrayList<String> sideEffects) {
 		this.sideEffects = sideEffects;
 	}
 
@@ -24,18 +47,8 @@ public class DrugInteraction {
 		return interactionWith;
 	}
 
+
 	public void setInteractionWith(String interactionWith) {
 		this.interactionWith = interactionWith;
 	}
-
-	public String getSideEffects() {
-		return sideEffects;
-	}
-
-	public void setSideEffects(String sideEffects) {
-		this.sideEffects = sideEffects;
-	}
-	
-	
-	
 }
