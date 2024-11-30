@@ -1,7 +1,17 @@
 package com.sfwe.pharmacy;
 
 import BackEnd.Employee;
+import Prescriptions.Medication;
+import InventoryControl.BatchMedication;
+import InventoryControl.PharmacyInventory;
+import Prescriptions.DrugInteraction;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import BackEnd.AccountHandling;
+import BackEnd.Date;
 
 /**
  * Hello world!
@@ -9,6 +19,57 @@ import BackEnd.AccountHandling;
 public class App {
     public static void main(String[] args) {
         System.out.println("Hello World!");
+        
+        
+        //INITIAL MEDICATION TESTING:
+        Medication med = new Medication("Omeprazole");
+        //Set alternative names
+        ArrayList<String> brandNames = new ArrayList<>(
+        		Arrays.asList("Prilosec OTC", "Prilosec", "Zegerid", "OmePPI", "Zegerid OTC")
+		);
+        med.setBrandNames(brandNames);
+        
+        //Create a shipment batch. 
+        BatchMedication batchOne = new BatchMedication(
+        		//Arrival date
+        		new Date(11, 29, 2024), 
+        		//Expiration date, of december 25th (I believe. check for 0 indexing) 
+        		new Date(2024, 12, 25), 
+        		//Stock count
+        		300);
+        med.setSingleBatch(batchOne);
+        
+        //set drug interactions
+        med.setInteractions(new ArrayList<>(
+        			Arrays.asList(
+        				new DrugInteraction("Warfarin", Arrays.asList("Blood thinning", "Strengthened effect")),
+        				new DrugInteraction("Citalopram", Arrays.asList("heart rhythm issues"))
+					))
+        );
+        
+        
+        //Write medication to storage
+        try {
+			PharmacyInventory.addMedication(med);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.out.println("Unable to add medication because: " + e);
+		}
+        
+        //get the medication from storage:
+        try {
+			Medication testMedication = PharmacyInventory.retrieveMedication("Omeprazole");
+			
+			System.out.println("medication info is: ");
+			testMedication.printMedicationInfo();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.out.println("Unable to get medication because: " + e);
+		}
+        
+        
         
         // INITIAL ACCOUNT comment out after initial attempt. 
         //String firstName, String user, String p, String secPass
@@ -22,7 +83,7 @@ public class App {
 			System.out.println("Unable to add employee because: " + e);
 			e.printStackTrace();
 		}*/
-        
+        /*
         //CHECK TO SEE IF IT EXISTS:
 		System.out.println("Does Bob now exist in the system?");
 		try {
@@ -52,6 +113,6 @@ public class App {
 			System.out.println("Unable to check log in because: " + e);
 			e.printStackTrace();
 		}
-        
+        */
     }
 }

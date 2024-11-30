@@ -1,6 +1,6 @@
 package InventoryControl;
 
-import java.time.LocalDate;
+import BackEnd.Date;
 
 /*
  * List attached to a medication. 
@@ -10,31 +10,38 @@ import java.time.LocalDate;
  */
 
 public class BatchMedication {
-	LocalDate arrivalDate;
-	LocalDate expirationDate;
+	Date arrivalDate;
+	Date expirationDate;
 	int Stock;
 	
-	public BatchMedication(LocalDate arrivalDate, LocalDate expirationDate, int stock) {
+	public BatchMedication() {};
+	public BatchMedication(Date arrivalDate, Date expirationDate, int stock) {
 		this.arrivalDate = arrivalDate;
 		this.expirationDate = expirationDate;
 		this.Stock = stock;
 	}
 	
-	public long daysToExpiration(LocalDate currentDate) {
+	public long daysToExpiration(Date currentDate) {
 		return -1;
 		
 	}
 	
-	public LocalDate getArrivalDate() {
+	public Date getArrivalDate() {
 		return arrivalDate;
 	}
-	public void setArrivalDate(LocalDate arrivalDate) {
+	public void setArrivalDate(int month, int day, int year) {
+		this.arrivalDate = new Date(month, day, year);
+	}
+	public void setArrivalDate(Date arrivalDate) {
 		this.arrivalDate = arrivalDate;
 	}
-	public LocalDate getExpirationDate() {
+	public Date getExpirationDate() {
 		return expirationDate;
 	}
-	public void setExpirationDate(LocalDate expirationDate) {
+	public void setExpirationDate(int month, int day, int year) {
+		this.expirationDate = new Date(month, day, year);
+	}
+	public void setExpirationDate(Date expirationDate) {
 		this.expirationDate = expirationDate;
 	}
 	public int getStock() {

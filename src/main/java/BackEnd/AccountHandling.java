@@ -6,6 +6,7 @@ import java.lang.reflect.InaccessibleObjectException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -20,7 +21,38 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
  * ALL exceptions bubbled upwards.
  */
 
+
 public class AccountHandling {
+	public enum actionType {
+		Manager,
+		Pharmacist,
+		PharmacyTech,
+		Cashier
+		
+	}
+	private static boolean roleVerification(Employee emp, List<Role> roleRequirement){
+		//get the account list
+		
+		ArrayList<Employee> accounts;
+		try {
+			accounts = readEmployeeStorage(FileHelper.findEmployeeFile());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		
+		//Find the account
+		for (Employee acc : accounts) {
+			//account found
+			if (acc.getUsername().equals(emp.getUsername())) {
+				if (roleRequirement.contains(acc.getAccountRole()) ) 
+					return true;
+			}
+		}
+		return false;
+	}
+	
 	/* EMPLOYEE ACCOUNTS */
 	//adds account to account database. 
 	public static void addEmployeeAccount(Employee newEmployee) throws Exception{
@@ -29,6 +61,26 @@ public class AccountHandling {
 		
 		//Send off to update storage
 		writeEmployee(acc);
+	}
+	
+	//Removes an employee from the database
+	public static void removeEmployeeAccount(Employee emp, Employee managerAccount) throws Exception {
+		//get the account list
+		ArrayList<Employee> accounts = readEmployeeStorage(FileHelper.findEmployeeFile());
+		
+		
+		//Find the account
+		for (Employee acc : accounts) {
+			//account found
+			if (acc.getUsername().equals(emp.getUsername())) {
+				//check for role requirement
+				if (roleVerification(managerAccount, Arrays.asList(Role.pharmacyManager))) {
+					accounts.remove(emp);
+				}	
+				else
+					throw new Exception("Your account has failed during account permission checks. ");
+			}
+		}
 	}
 	
 	//finds and returns Account. Returns null if account is not found.
