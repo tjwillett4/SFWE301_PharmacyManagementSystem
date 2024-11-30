@@ -18,6 +18,15 @@ public class Medication {
 	public Medication(String name) { 
 		this.name = name;
 	}
+	public String allRecordsToString() {
+		String res = "";
+		for (BatchMedication batch : batches) {
+			res += "Batch " + batch.getArrivalDate().toString() + " modifiaction records:\n";
+			for (String s : batch.getRecords())
+				res += s + "\n";
+		}
+		return res;
+	}
 	
 	public String getName() {
 		return name;
@@ -61,9 +70,10 @@ public class Medication {
 		}
 		info += "\n Stock information";
 		for (BatchMedication b : batches) {
-			info += "\nArrival date: " + b.getArrivalDate().dateAsString()
-					+ "\nExpiration date: " + b.getExpirationDate().dateAsString()
-					+ "\nRemainder: " + b.getStock() + "\n";
+			info += "\nArrival date: " + b.getArrivalDate().toString()
+					+ "\nExpiration date: " + b.getExpirationDate().toString()
+					+ "\nRemainder: " + b.getStock() + "\n"
+					+ allRecordsToString();
 		}
 				
 		

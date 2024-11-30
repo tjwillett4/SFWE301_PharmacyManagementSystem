@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import BackEnd.AccountHandling;
-import BackEnd.Date;
 
 /**
  * Hello world!
@@ -22,6 +21,7 @@ public class App {
         
         
         //INITIAL MEDICATION TESTING:
+        
         Medication med = new Medication("Omeprazole");
         //Set alternative names
         ArrayList<String> brandNames = new ArrayList<>(
@@ -32,9 +32,9 @@ public class App {
         //Create a shipment batch. 
         BatchMedication batchOne = new BatchMedication(
         		//Arrival date
-        		new Date(11, 29, 2024), 
+        		LocalDate.now(), 
         		//Expiration date, of december 25th (I believe. check for 0 indexing) 
-        		new Date(2024, 12, 25), 
+        		LocalDate.of(2024, 12, 25), 
         		//Stock count
         		300);
         med.setSingleBatch(batchOne);
@@ -57,9 +57,21 @@ public class App {
 			System.out.println("Unable to add medication because: " + e);
 		}
         
+        
+
         //get the medication from storage:
         try {
 			Medication testMedication = PharmacyInventory.retrieveMedication("Omeprazole");
+			
+	        //change the stock count of the medicaiton. 
+			for (String s : Arrays.asList("joe", "Han", "tobby")) {
+				if (!testMedication.getBatches().get(0).updateStock(
+						testMedication.getBatches().get(0).getStock()-14, s))
+					System.out.println("Error! There is not enough medication left to fill this prescription.");
+				
+			}
+			PharmacyInventory.updateMedication(testMedication);
+
 			
 			System.out.println("medication info is: ");
 			testMedication.printMedicationInfo();

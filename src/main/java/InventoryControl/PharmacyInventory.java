@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import BackEnd.FileHelper;
 import Prescriptions.Medication;
@@ -102,6 +103,8 @@ public class PharmacyInventory {
 			throw new Exception("Error finding or creating file! " + e);
 		}
 		ObjectMapper mapper = new XmlMapper();
+		mapper.registerModule(new JavaTimeModule());
+		mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 		mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 		
 		//Get the current list of medications and add the new one to it.
@@ -128,7 +131,10 @@ public class PharmacyInventory {
 			throw new Exception("Error finding or creating file! " + e);
 		}
 		ObjectMapper mapper = new XmlMapper();
+		mapper.registerModule(new JavaTimeModule());
+		mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 		mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+		
 
 		//rewrite the file with the new medication added.
 		try {
@@ -152,6 +158,8 @@ public class PharmacyInventory {
 		//Read the file into an array list.
 		try {
 			ObjectMapper mapper = new XmlMapper(); 
+			mapper.registerModule(new JavaTimeModule());
+			mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 			TypeReference<ArrayList<Medication>> typeRef = new TypeReference<ArrayList<Medication>>() {};
 			ArrayList<Medication> medications = mapper.readValue(Files.newInputStream(p), typeRef);
 			return medications;

@@ -72,24 +72,21 @@ public class Serializer {
 		StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
 		encryptor.setPassword(password);                         // we HAVE TO set a password
 		
-		return new Employee(
-				emp.getNameFirst(),
-				emp.getUsername(),
-				encryptor.encrypt(emp.getPassword()),
-				encryptString(emp.getSecCodePass(), emp.getPassword())
-				);
+		//encrypt any info needed to be encrypted.
+		emp.setPassword(encryptor.encrypt(emp.getPassword()));
+		emp.setSecCodePass(encryptString(emp.getSecCodePass(), emp.getPassword()));
+		
+		return emp;
 	}
 	public static Employee decryptEmployee(Employee account, String password) throws Exception {
 		StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
 		encryptor.setPassword(password);                         // we HAVE TO set a password
 		
-		return new Employee(
-				account.getNameFirst(),
-				account.getUsername(),
-				encryptor.decrypt(account.getPassword()),
-				password
-				//decryptString(account.getSecCodePass(), account.getPassword())
-				);
+		//decrypt any encrypted info
+		account.setPassword(encryptor.decrypt(account.getPassword()));
+		account.setSecCodePass(password);
+		
+		return account;
 		
 	}
 	
