@@ -2,7 +2,7 @@ package BackEnd;
 
 import java.util.List;
 
-public class Customer {
+public class Customer extends Account{
 	private String phoneNum;
 	private String address;
 	

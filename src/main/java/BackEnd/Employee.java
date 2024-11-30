@@ -4,6 +4,7 @@ public class Employee extends Account{
 	private String username;
 	private String password;
 	private Role accountRole;
+	private int loginAttempts;
 	
 	//Encryption keys, required for Password based encryption (PBE):
 	//personal encryption for password
@@ -22,7 +23,7 @@ public class Employee extends Account{
 		this.setSecCodePass(p);
 	}
 	
-
+	
 	public String getUsername() {
 		return username;
 	}
@@ -69,6 +70,14 @@ public class Employee extends Account{
 
 	public void setAccountsPasscode(String accountsPasscode) {
 		this.accountsPasscode = accountsPasscode;
+	}
+
+	public int getLoginAttempts() {
+		return loginAttempts;
+	}
+
+	public void setLoginAttempts(int loginAttempts) {
+		this.loginAttempts = loginAttempts;
 	}
 	
 	
