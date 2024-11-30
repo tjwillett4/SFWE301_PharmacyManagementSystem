@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox xmlns="http://javafx.com/javafx/20" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="UserInterface.InventoryManagementController" spacing="10" padding="10">
+    <Label text="Inventory Management" style="-fx-font-size: 20px;"/>
+    <TableView fx:id="inventoryTable">
+        <columns>
+            <TableColumn text="Medication Name" fx:id="medNameColumn"/>
+            <TableColumn text="Quantity" fx:id="quantityColumn"/>
+            <TableColumn text="Expiration Date" fx:id="expirationDateColumn"/>
+        </columns>
+    </TableView>
+    <HBox spacing="10">
+        <Button text="Add Medication" onAction="#handleAddMedication"/>
+        <Button text="Remove Medication" onAction="#handleRemoveMedication"/>
+    </HBox>
+</VBox>
