@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx/20" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="UserInterface.MainDashboardController">
+    <!-- Top Menu Bar -->
+    <top>
+        <MenuBar>
+            <Menu text="File">
+                <MenuItem text="Logout" onAction="#handleLogout"/>
+                <MenuItem text="Exit" onAction="#handleExit"/>
+            </Menu>
+            <Menu text="Navigation">
+                <MenuItem text="Inventory Management" onAction="#openInventoryManagement" fx:id="inventoryMenuItem"/>
+                <MenuItem text="Prescription Tracking" onAction="#handleTrackPrescriptions" fx:id="prescriptionMenuItem"/>
+                <MenuItem text="Management Interface" onAction="#openManagementInterface" fx:id="managementMenuItem"/>
+            </Menu>
+        </MenuBar>
+    </top>
+
+    <!-- Center Section -->
+    <center>
+        <VBox spacing="20" alignment="CENTER" padding="20">
+            <HBox spacing="20" alignment="CENTER">
+                <Button text="Process Prescription" onAction="#handleProcessPrescription" prefWidth="200" prefHeight="100"/>
+                <Button text="Refill Prescription" onAction="#handleRefillPrescription" prefWidth="200" prefHeight="100"/>
+            </HBox>
+            <Label text="Real-Time Inventory" style="-fx-font-size: 16px;"/>
+            <TableView fx:id="inventoryOverviewTable" prefHeight="200" prefWidth="400">
+                <columns>
+                    <TableColumn text="Medication" fx:id="medNameColumn"/>
+                    <TableColumn text="Quantity" fx:id="quantityColumn"/>
+                </columns>
+            </TableView>
+        </VBox>
+    </center>
+
+    <!-- Bottom Status Bar -->
+    <bottom>
+        <Label text="Pharmacy Management System - Dashboard" padding="10" style="-fx-font-size: 14px;"/>
+    </bottom>
+</BorderPane>
