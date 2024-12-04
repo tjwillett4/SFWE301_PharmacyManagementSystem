@@ -1,5 +1,6 @@
 package InventoryControl;
 
+import javafx.beans.property.*;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -11,21 +12,30 @@ import java.util.ArrayList;
  */
 
 public class BatchMedication {
-	LocalDate arrivalDate;
-	LocalDate expirationDate;
-	int stock;
-	ArrayList<String> records;
+	private final StringProperty medicationName;
+    private final ObjectProperty<LocalDate> arrivalDate;
+    private final ObjectProperty<LocalDate> expirationDate;
+    private final IntegerProperty stock;
+    private ArrayList<String> records;
 	
+	public BatchMedication() {
+		this.medicationName = new SimpleStringProperty();
+        this.arrivalDate = new SimpleObjectProperty<>();
+        this.expirationDate = new SimpleObjectProperty<>();
+        this.stock = new SimpleIntegerProperty();
+        this.records = new ArrayList<>();
+    }
 	
-	public BatchMedication() {};
-	public BatchMedication(LocalDate arrivalDate, LocalDate expirationDate, int stock) {
-		this.arrivalDate = arrivalDate;
-		this.expirationDate = expirationDate;
-		this.stock = stock;
-	}
+	public BatchMedication(String medicationName, int stock, LocalDate expirationDate) {
+        this.medicationName = new SimpleStringProperty(medicationName);
+        this.arrivalDate = new SimpleObjectProperty<>(LocalDate.now()); // Defaults to today
+        this.expirationDate = new SimpleObjectProperty<>(expirationDate);
+        this.stock = new SimpleIntegerProperty(stock);
+        this.records = new ArrayList<>();
+    }
 	
 	public long daysToExpiration(LocalDate currentDate) {
-		return currentDate.until(expirationDate, ChronoUnit.DAYS);
+	    return currentDate.until(expirationDate.get(), ChronoUnit.DAYS);
 	}
 	public String recordsAsString() {
 		String res = "";
@@ -34,31 +44,32 @@ public class BatchMedication {
 		return res;
 	}
 	
-	public boolean updateStock(int stock, String name) {
-		if (stock < 0)
-			return false;
-		if(records == null)
-			records = new ArrayList<String>();
-		String edit;
-		//find if it's a removal or addition
-		if (stock < this.stock) 
-			edit = "removed " + String.valueOf(this.stock - stock) + " from";
-		else
-			edit = "added " + String.valueOf(stock - this.stock) + " to";
-		
-		String item = LocalDate.now() + ": " + edit + " the batch by " + name + ".";
-		
-		records.add(item);
-			
-		this.stock = stock;
-		return true;
-	}
+	public boolean updateStock(int newStock, String name) {
+        if (newStock < 0) {
+            return false;
+        }
+        if (records == null) {
+            records = new ArrayList<>();
+        }
+        String edit;
+        int currentStock = stock.get(); // Extract the integer value from IntegerProperty
+        if (newStock < currentStock) {
+            edit = "removed " + (currentStock - newStock) + " from";
+        } else {
+            edit = "added " + (newStock - currentStock) + " to";
+        }
+
+        String item = LocalDate.now() + ": " + edit + " the batch by " + name + ".";
+        records.add(item);
+        this.stock.set(newStock); // Update the IntegerProperty
+        return true;
+    }
 	public int getStock() {
-		return stock;
-	}
+        return stock.get();
+    }
 	public void setStock(int stock) {
-		this.stock = stock;
-	}
+        this.stock.set(stock);
+    }
 	public ArrayList<String> getRecords() {
 		return records;
 	}
@@ -67,16 +78,39 @@ public class BatchMedication {
 		
 	}
 	public LocalDate getArrivalDate() {
-		return arrivalDate;
-	}
+        return arrivalDate.get();
+    }
 	public void setArrivalDate(LocalDate arrivalDate) {
-		this.arrivalDate = arrivalDate;
-	}
+        this.arrivalDate.set(arrivalDate);
+    }
 	public LocalDate getExpirationDate() {
-		return expirationDate;
-	}
+        return expirationDate.get();
+    }
 	public void setExpirationDate(LocalDate expirationDate) {
-		this.expirationDate = expirationDate;
-	}
+        this.expirationDate.set(expirationDate);
+    }
+	// JavaFX property methods
+    public String getMedicationName() {
+        return medicationName.get();
+    }
+    public IntegerProperty quantityProperty() {
+        return stock;
+    }
+    public ObjectProperty<LocalDate> expirationDateProperty() {
+        return expirationDate;
+    }
+
+
+    public void setMedicationName(String medicationName) {
+        this.medicationName.set(medicationName);
+    }
+
+    public StringProperty medicationNameProperty() {
+        return medicationName;
+    }
+    public ObjectProperty<LocalDate> arrivalDateProperty() {
+        return arrivalDate;
+    }
+	
 	
 }

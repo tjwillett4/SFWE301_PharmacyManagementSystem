@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.event.ActionEvent;
 import BackEnd.AccountHandling;
+import BackEnd.Employee;
 
 public class ResetPasswordController {
 
@@ -31,9 +32,15 @@ public class ResetPasswordController {
         try {
             boolean userExists = AccountHandling.employeeExists(username);
             if (userExists) {
-                //reset password
-                AccountHandling.changeEmployeeAccount(username, newPassword);
-                showAlert(Alert.AlertType.INFORMATION, "Success", "Password reset successfully!");
+                // Retrieve the employee and update the password
+                Employee employee = AccountHandling.getEmployeeByUsername(username);
+                if (employee != null) {
+                    employee.setPassword(newPassword);
+                    AccountHandling.changeEmployeeAccount(username, employee);
+                    showAlert(Alert.AlertType.INFORMATION, "Success", "Password reset successfully!");
+                } else {
+                    errorMessage.setText("User retrieval failed.");
+                }
             } else {
                 errorMessage.setText("Username not found.");
             }
@@ -43,6 +50,7 @@ public class ResetPasswordController {
         }
     }
 
+    // Method to display alerts
     private void showAlert(Alert.AlertType type, String title, String message) {
         Alert alert = new Alert(type);
         alert.setTitle(title);

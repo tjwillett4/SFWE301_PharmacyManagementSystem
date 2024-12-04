@@ -42,14 +42,15 @@ public class ManagementInterfaceController {
 
     @FXML
     private void openInventoryManagement(ActionEvent event) {
-        NavigationUtil.loadInventoryManagement(event);
+        NavigationUtil navigationUtil = new NavigationUtil();
+        navigationUtil.loadInventoryManagement(event);
     }
 
     @FXML
     private void openSalesTracking(ActionEvent event) {
-        NavigationUtil.loadSalesTracking(event);
+        NavigationUtil navigationUtil = new NavigationUtil();
+        navigationUtil.loadSalesTracking(event);
     }
-
     @FXML
     private void generateInventoryReport(ActionEvent event) {
         // Logic to generate inventory report

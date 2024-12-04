@@ -24,6 +24,10 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 public class AccountHandling {
 	private final static int LOCKOUT_COUNT = 5;
+	// Getter for LOCKOUT_COUNT
+    public static int getLockoutCount() {
+        return LOCKOUT_COUNT;
+    }
 	public enum actionType {
 		Manager,
 		Pharmacist,
@@ -118,6 +122,46 @@ public class AccountHandling {
 		}
 		return false;
 	}
+	
+	// Method to get an employee by their username
+    public static Employee getEmployeeByUsername(String username) throws Exception {
+        ArrayList<Employee> employees = FileHelper.readEmployeeStorage(FileHelper.findEmployeeFile());
+
+        for (Employee employee : employees) {
+            if (employee.getUsername().equals(username)) {
+                return employee; // Return the matching employee
+            }
+        }
+
+        return null; // No matching employee found
+    }
+	
+	// Increment login attempts for a user
+    public static void incrementLoginAttempts(String username) throws Exception {
+        Path employeeFile = FileHelper.findEmployeeFile();
+        ArrayList<Employee> employees = FileHelper.readEmployeeStorage(employeeFile);
+
+        for (Employee employee : employees) {
+            if (employee.getUsername().equals(username)) {
+                employee.setLoginAttempts(employee.getLoginAttempts() + 1);
+                FileHelper.updateEmployee(employee);
+                return;
+            }
+        }
+    }
+	
+	// Check if a user's account is locked
+    public static boolean isAccountLocked(String username) throws Exception {
+        Path employeeFile = FileHelper.findEmployeeFile();
+        ArrayList<Employee> employees = FileHelper.readEmployeeStorage(employeeFile);
+
+        for (Employee employee : employees) {
+            if (employee.getUsername().equals(username)) {
+                return employee.getLoginAttempts() >= LOCKOUT_COUNT;
+            }
+        }
+        return false; // User not found
+    }
 	
 	//finds and returns Account. 
 	//Returns null if lockout. Returns empty employee if failed.

@@ -3,42 +3,36 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 
-<BorderPane xmlns="http://javafx.com/javafx/20" xmlns:fx="http://javafx.com/fxml/1"
+<BorderPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="UserInterface.MainDashboardController">
-    <!-- Top Menu Bar -->
+
+    <!-- Top Header (Optional) -->
     <top>
-        <MenuBar>
-            <Menu text="File">
-                <MenuItem text="Logout" onAction="#handleLogout"/>
-                <MenuItem text="Exit" onAction="#handleExit"/>
-            </Menu>
-            <Menu text="Navigation">
-                <MenuItem text="Inventory Management" onAction="#openInventoryManagement" fx:id="inventoryMenuItem"/>
-                <MenuItem text="Prescription Tracking" onAction="#handleTrackPrescriptions" fx:id="prescriptionMenuItem"/>
-                <MenuItem text="Management Interface" onAction="#openManagementInterface" fx:id="managementMenuItem"/>
-            </Menu>
-        </MenuBar>
+        <Label text="Pharmacy Management System - Dashboard" style="-fx-font-size: 18px; -fx-padding: 10px;" alignment="CENTER"/>
     </top>
 
-    <!-- Center Section -->
+    <!-- Center Section with Buttons -->
     <center>
-        <VBox spacing="20" alignment="CENTER" padding="20">
+        <VBox spacing="20" alignment="CENTER">
+            <padding>
+    			<Insets top="20" right="20" bottom="20" left="20"/>
+			</padding>
+            <!-- Navigation Buttons -->
+            <HBox spacing="20" alignment="CENTER">
+                <Button text="Inventory Management" onAction="#openInventoryManagement" prefWidth="200" prefHeight="100"/>
+                <Button text="Prescription Tracking" onAction="#handleTrackPrescriptions" prefWidth="200" prefHeight="100"/>
+                <Button text="Management Interface" onAction="#openManagementInterface" prefWidth="200" prefHeight="100"/>
+            </HBox>
+            <!-- Functional Buttons -->
             <HBox spacing="20" alignment="CENTER">
                 <Button text="Process Prescription" onAction="#handleProcessPrescription" prefWidth="200" prefHeight="100"/>
                 <Button text="Refill Prescription" onAction="#handleRefillPrescription" prefWidth="200" prefHeight="100"/>
             </HBox>
-            <Label text="Real-Time Inventory" style="-fx-font-size: 16px;"/>
-            <TableView fx:id="inventoryOverviewTable" prefHeight="200" prefWidth="400">
-                <columns>
-                    <TableColumn text="Medication" fx:id="medNameColumn"/>
-                    <TableColumn text="Quantity" fx:id="quantityColumn"/>
-                </columns>
-            </TableView>
         </VBox>
     </center>
 
     <!-- Bottom Status Bar -->
     <bottom>
-        <Label text="Pharmacy Management System - Dashboard" padding="10" style="-fx-font-size: 14px;"/>
+        <Label text="Welcome to the Pharmacy Management System!" style="-fx-font-size: 14px; -fx-padding: 10px;" alignment="CENTER"/>
     </bottom>
 </BorderPane>

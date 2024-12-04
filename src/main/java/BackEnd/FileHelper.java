@@ -21,6 +21,18 @@ import java.nio.file.Paths;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
+import InventoryControl.BatchMedication;
+import InventoryControl.PharmacyInventory;
+import Prescriptions.Medication;
+
+import java.util.ArrayList;
+import java.util.stream.Collectors;
+
+import javafx.scene.control.Alert;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
 public class FileHelper {
 	public final static String DATA_DIR = System.getenv("APPDATA") + "//pharmacy";
 	public final static String ACCOUNT_STORAGE_FILE = "/CustomerStorage.xml";
@@ -105,4 +117,132 @@ public class FileHelper {
 		
 		return validCheck;
 	}
+	
+	// Read employee storage from a file
+    public static ArrayList<Employee> readEmployeeStorage(Path employeeFile) throws IOException {
+        if (!Files.exists(employeeFile) || employeeFile.toFile().length() == 0) {
+            return new ArrayList<>(); // Return an empty list if the file does not exist or is empty
+        }
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+
+        try {
+            return mapper.readValue(Files.newInputStream(employeeFile),
+                    mapper.getTypeFactory().constructCollectionType(ArrayList.class, Employee.class));
+        } catch (IOException e) {
+            throw new IOException("Error reading employee storage file: " + e.getMessage(), e);
+        }
+    }
+
+    // Update an employee in the storage file
+    public static void updateEmployee(Employee employee) throws IOException {
+        Path employeeFile;
+        try {
+            employeeFile = FileHelper.findEmployeeFile();
+        } catch (Exception e) {
+            throw new IOException("Error finding employee file: " + e.getMessage(), e);
+        }
+
+        ArrayList<Employee> employees = readEmployeeStorage(employeeFile);
+
+        boolean updated = false;
+        for (int i = 0; i < employees.size(); i++) {
+            if (employees.get(i).getUsername().equals(employee.getUsername())) {
+                employees.set(i, employee);
+                updated = true;
+                break;
+            }
+        }
+
+        if (!updated) {
+            employees.add(employee);
+        }
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        mapper.writeValue(Files.newOutputStream(employeeFile), employees);
+    }
+    
+    public static ArrayList<Medication> getAllMedications() throws Exception {
+        Path medicationFile = findPharmacyInventoryFile();
+
+        if (!Files.exists(medicationFile) || medicationFile.toFile().length() == 0) {
+            return new ArrayList<>(); // Return an empty list if the file does not exist or is empty
+        }
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+
+        try {
+            ArrayList<BatchMedication> batchMedications = mapper.readValue(
+                Files.newInputStream(medicationFile),
+                mapper.getTypeFactory().constructCollectionType(ArrayList.class, BatchMedication.class)
+            );
+
+            // Convert BatchMedication to Medication
+            return batchMedications.stream().map(batch -> {
+                Medication medication = new Medication();
+                medication.setName(batch.getMedicationName());
+                medication.setStock(batch.getStock());
+                ArrayList<BatchMedication> batches = new ArrayList<>();
+                batches.add(batch);
+                medication.setBatches(batches);
+                return medication;
+            }).collect(Collectors.toCollection(ArrayList::new));
+
+        } catch (IOException e) {
+            throw new IOException("Error reading medication storage file: " + e.getMessage(), e);
+        }
+    }
+    
+    public static ArrayList<Medication> searchMedications(String keyword, String category, String supplier, boolean inStockOnly) throws Exception {
+        // Fetch all medications
+        ArrayList<Medication> allMedications = getAllMedications();
+
+        // Filter based on the provided criteria
+        ArrayList<Medication> filteredMedications = new ArrayList<>();
+        for (Medication medication : allMedications) {
+            boolean matchesKeyword = (keyword == null || keyword.isEmpty()) || medication.getName().toLowerCase().contains(keyword.toLowerCase());
+            boolean matchesCategory = (category == null || category.isEmpty()) || medication.getCategory().equalsIgnoreCase(category);
+            boolean matchesSupplier = (supplier == null || supplier.isEmpty()) || medication.getSupplier().equalsIgnoreCase(supplier);
+            boolean matchesStock = !inStockOnly || medication.getStock() > 0;
+
+            if (matchesKeyword && matchesCategory && matchesSupplier && matchesStock) {
+                filteredMedications.add(medication);
+            }
+        }
+        return filteredMedications;
+    }
+    
+    public static ArrayList<Customer> getAllCustomers() throws Exception {
+        Path customerFile = findCustomerFile();
+
+        if (!Files.exists(customerFile) || customerFile.toFile().length() == 0) {
+            return new ArrayList<>(); // Return an empty list if the file does not exist or is empty
+        }
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+
+        try {
+            return mapper.readValue(Files.newInputStream(customerFile),
+                    mapper.getTypeFactory().constructCollectionType(ArrayList.class, Customer.class));
+        } catch (IOException e) {
+            throw new IOException("Error reading customer storage file: " + e.getMessage(), e);
+        }
+    }
+    
+    public static void removeCustomer(Customer customer) throws Exception {
+        Path customerFile = findCustomerFile();
+        ArrayList<Customer> customers = getAllCustomers();
+
+        if (customers.removeIf(existingCustomer -> existingCustomer.getPhoneNum().equals(customer.getPhoneNum()))) {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.registerModule(new JavaTimeModule());
+            mapper.writeValue(Files.newOutputStream(customerFile), customers);
+        } else {
+            throw new IOException("Customer not found in storage.");
+        }
+    }
 }

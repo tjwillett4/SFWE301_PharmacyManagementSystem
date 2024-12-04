@@ -12,17 +12,50 @@ import java.util.Arrays;
 
 import BackEnd.AccountHandling;
 
+
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+
+public class App extends Application {
+
+	@Override
+    public void start(Stage primaryStage) {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/Login.fxml"));
+            Scene scene = new Scene(fxmlLoader.load());
+            primaryStage.setTitle("Pharmacy Management System - Login");
+            primaryStage.setScene(scene);
+            primaryStage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Error: Could not load FXML file.");
+        }
+    }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+}
+
+
 /**
  * Hello world!
  */
+/*
 public class App {
     public static void main(String[] args) {
         System.out.println("Hello World!");
         
         
         //INITIAL MEDICATION TESTING:
-        
-        Medication med = new Medication("Omeprazole");
+        Medication med = new Medication(
+        	    "Omeprazole",     // Name
+        	    "Proton Pump Inhibitor", // Category
+        	    "Default Supplier",      // Supplier
+        	    0                        // Stock (initialize to zero if none)
+        	);
         //Set alternative names
         ArrayList<String> brandNames = new ArrayList<>(
         		Arrays.asList("Prilosec OTC", "Prilosec", "Zegerid", "OmePPI", "Zegerid OTC")
@@ -31,12 +64,10 @@ public class App {
         
         //Create a shipment batch. 
         BatchMedication batchOne = new BatchMedication(
-        		//Arrival date
-        		LocalDate.now(), 
-        		//Expiration date, of december 25th (I believe. check for 0 indexing) 
-        		LocalDate.of(2024, 12, 25), 
-        		//Stock count
-        		300);
+        	    "Omeprazole", // Medication name
+        	    300, // Stock count
+        	    LocalDate.of(2024, 12, 25) // Expiration date
+        	);
         med.setSingleBatch(batchOne);
         
         //set drug interactions
@@ -80,7 +111,7 @@ public class App {
 			e.printStackTrace();
 			System.out.println("Unable to get medication because: " + e);
 		}
-        
+*/     
         
         
         // INITIAL ACCOUNT comment out after initial attempt. 
@@ -125,6 +156,7 @@ public class App {
 			System.out.println("Unable to check log in because: " + e);
 			e.printStackTrace();
 		}
-        */
+        
     }
 }
+*/

@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.VBox?>
 
 
-<BorderPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="UserInterface.LoginController">
    <center>
       <VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="640.0" spacing="10.0">
           <Label style="-fx-font-size: 24px;" text="Pharmacy Management System" />
@@ -21,3 +21,4 @@
       </VBox>
    </center>
 </BorderPane>
+

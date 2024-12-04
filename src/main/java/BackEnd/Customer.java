@@ -3,7 +3,10 @@ package BackEnd;
 import java.util.List;
 
 public class Customer extends Account{
-	private String phoneNum;
+	private String firstName;
+    private String lastName;
+    private String email;
+    private String phoneNum;
 	private String address;
 	
 	//pharmacy specific account info. 
@@ -39,3 +42,4 @@ public class Customer extends Account{
 	
 	
 }
+
