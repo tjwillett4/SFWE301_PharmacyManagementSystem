@@ -15,6 +15,8 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
+import UserInterface.Session;
+
 /*
  * Used to interact with encrypted files/user information. A kind of service for the in-between stages
  * 
@@ -84,19 +86,165 @@ public class AccountHandling {
 	    }
 	}
 	
-	public static void deleteEmployeeAccount(String username) throws Exception {
-	    // Locate the account in your storage (database, file, etc.)
-	    Employee emp = getEmployeeByUsername(username);
-	    if (emp == null) {
-	        throw new Exception("Account not found for username: " + username);
-	    }
+	// Saves the updated list of employees back to the storage file
+    public static void saveEmployeeStorage(Path employeeFile, ArrayList<Employee> employees) throws Exception {
+        try {
+            XmlMapper mapper = new XmlMapper();
+            mapper.writeValue(Files.newOutputStream(employeeFile), employees);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception("Failed to save the updated employee storage file.");
+        }
+    }
+    
+    // Updates or adds an employee in the storage
+    public static void updateEmployee(Employee employee) throws Exception {
+        Path employeeFile = FileHelper.findEmployeeFile();
+        ArrayList<Employee> employees = readEmployeeStorage(employeeFile);
 
-	    // Remove the account from storage
-	    employeeList.remove(emp); // Assuming employeeList is your storage list
+        boolean updated = false;
+        for (int i = 0; i < employees.size(); i++) {
+            if (employees.get(i).getUsername().equals(employee.getUsername())) {
+                employees.set(i, employee);
+                updated = true;
+                break;
+            }
+        }
 
-	    // Save changes to persistent storage
-	    saveEmployeeData(); // Save the updated list to a file or database
-	}
+        if (!updated) {
+            employees.add(employee);
+        }
+
+        saveEmployeeStorage(employeeFile, employees);
+    }
+ 
+
+    // Read employee storage from a file
+    public static ArrayList<Employee> readEmployeeStorage(Path employeeFile) throws Exception {
+        if (!Files.exists(employeeFile)) {
+            return new ArrayList<>(); // Return an empty list if the file doesn't exist
+        }
+        if (employeeFile.toFile().length() == 0) {
+            return new ArrayList<>(); // Return an empty list if the file is empty
+        }
+
+        try {
+            XmlMapper mapper = new XmlMapper();
+            TypeReference<ArrayList<Employee>> typeRef = new TypeReference<>() {};
+            return mapper.readValue(Files.newInputStream(employeeFile), typeRef);
+        } catch (IOException e) {
+            throw new Exception("Error reading employee storage: " + e.getMessage(), e);
+        }
+    }
+
+    // Add a new employee account
+    public static void addEmployeeAccount(Employee newEmployee) throws Exception {
+        Path employeeFile = FileHelper.findEmployeeFile();
+        ArrayList<Employee> employees = readEmployeeStorage(employeeFile);
+
+        // Ensure the username is unique
+        if (employees.stream().anyMatch(emp -> emp.getUsername().equals(newEmployee.getUsername()))) {
+            throw new Exception("An account with username " + newEmployee.getUsername() + " already exists.");
+        }
+
+        employees.add(newEmployee);
+        saveEmployeeStorage(employeeFile, employees);
+    }
+
+    // Delete an employee account
+    public static void deleteEmployeeAccount(String username) throws Exception {
+        Path employeeFile = FileHelper.findEmployeeFile();
+        ArrayList<Employee> employees = readEmployeeStorage(employeeFile);
+
+        Employee employeeToDelete = employees.stream()
+                .filter(emp -> emp.getUsername().equals(username))
+                .findFirst()
+                .orElseThrow(() -> new Exception("No account found for username: " + username));
+
+        employees.remove(employeeToDelete);
+        saveEmployeeStorage(employeeFile, employees);
+    }
+
+    // Update an employee account
+    public static void updateEmployeeAccount(String username, Employee updatedEmployee) throws Exception {
+        Path employeeFile = FileHelper.findEmployeeFile();
+        ArrayList<Employee> employees = readEmployeeStorage(employeeFile);
+
+        boolean updated = false;
+        for (int i = 0; i < employees.size(); i++) {
+            if (employees.get(i).getUsername().equals(username)) {
+                employees.set(i, updatedEmployee);
+                updated = true;
+                break;
+            }
+        }
+
+        if (!updated) {
+            throw new Exception("Employee with username " + username + " not found.");
+        }
+
+        saveEmployeeStorage(employeeFile, employees);
+    }
+
+    // Get an employee by username
+    public static Employee getEmployeeByUsername(String username) throws Exception {
+        Path employeeFile = FileHelper.findEmployeeFile();
+        ArrayList<Employee> employees = readEmployeeStorage(employeeFile);
+
+        return employees.stream()
+                .filter(emp -> emp.getUsername().equals(username))
+                .findFirst()
+                .orElse(null); // Return null if not found
+    }
+
+    // Unlock a locked account
+    public static boolean unlockEmployeeAccount(String username, String managerUsername) throws Exception {
+        Employee manager = getEmployeeByUsername(managerUsername);
+        if (manager == null || manager.getAccountRole() != Role.pharmacyManager) {
+            throw new Exception("Unauthorized: Only managers can unlock accounts.");
+        }
+
+        Path employeeFile = FileHelper.findEmployeeFile();
+        ArrayList<Employee> employees = readEmployeeStorage(employeeFile);
+
+        for (Employee emp : employees) {
+            if (emp.getUsername().equals(username)) {
+                emp.setLoginAttempts(0);
+                saveEmployeeStorage(employeeFile, employees);
+                return true;
+            }
+        }
+
+        return false; // Account not found
+    }
+
+    // Increment login attempts
+    public static void incrementLoginAttempts(String username) throws Exception {
+        Path employeeFile = FileHelper.findEmployeeFile();
+        ArrayList<Employee> employees = readEmployeeStorage(employeeFile);
+
+        for (Employee emp : employees) {
+            if (emp.getUsername().equals(username)) {
+                emp.setLoginAttempts(emp.getLoginAttempts() + 1);
+                saveEmployeeStorage(employeeFile, employees);
+                return;
+            }
+        }
+
+        throw new Exception("Account not found for username: " + username);
+    }
+
+    // Check if an account is locked
+    public static boolean isAccountLocked(String username) throws Exception {
+        Employee emp = getEmployeeByUsername(username);
+        if (emp != null) {
+            return emp.getLoginAttempts() >= LOCKOUT_COUNT;
+        }
+        return false;
+    }
+ 
+    
+ 
 	
 	public static void saveEmployeeData() {
         try (FileWriter writer = new FileWriter("employees.txt")) {
@@ -153,29 +301,7 @@ public class AccountHandling {
 	    return new Employee(userNotFound); // Empty Employee on failure
 	}
 
-    /**
-     * Unlocks a locked account, ensuring only managers can perform this action.
-     */
-    public static boolean unlockEmployeeAccount(String username, String managerUsername) throws Exception {
-        Employee manager = getEmployeeByUsername(managerUsername);
-        if (manager == null || manager.getAccountRole() != Role.pharmacyManager) {
-            throw new Exception("Unauthorized: Only managers can unlock accounts.");
-        }
-
-        ArrayList<Employee> accounts = readEmployeeStorage(FileHelper.findEmployeeFile());
-
-        for (Employee acc : accounts) {
-            if (acc.getUsername().equals(username)) {
-                acc.setLoginAttempts(0); // Reset login attempts
-                writeEmployee(accounts);
-                System.out.println("Account unlocked for user: " + username);
-                return true;
-            }
-        }
-
-        System.out.println("User not found: " + username);
-        return false; // User not found
-    }
+    
 
     // Helper method to check if an employee exists
     public static boolean employeeExists(String username) throws Exception {
@@ -190,19 +316,7 @@ public class AccountHandling {
         return false;
     }
 
-    /**
-     * Adds an employee to the storage (bypasses encryption for simplicity).
-     */
-    public static void addEmployeeAccount(Employee newEmployee) throws Exception {
-        // Get the current list of accounts
-        ArrayList<Employee> accounts = readEmployeeStorage(FileHelper.findEmployeeFile());
-
-        // Add the new account
-        accounts.add(newEmployee);
-
-        // Write the updated list back to storage
-        writeEmployee(accounts);
-    }
+    
 
 	//Removes an employee from the database
 	public static boolean removeEmployeeAccount(Employee emp, Employee managerAccount) throws Exception {
@@ -228,19 +342,6 @@ public class AccountHandling {
 		return false;
 	}
 	
-	public static void updateEmployeeAccount(String username, Employee updatedEmployee) throws Exception {
-	    ArrayList<Employee> accounts = readEmployeeStorage(FileHelper.findEmployeeFile());
-
-	    for (Employee account : accounts) {
-	        if (account.getUsername().equals(username)) {
-	            accounts.set(accounts.indexOf(account), updatedEmployee); // Replace with updated employee
-	            writeEmployee(accounts); // Save changes to storage
-	            return;
-	        }
-	    }
-
-	    throw new Exception("Employee with username '" + username + "' not found.");
-	}
 	
 	//UnlockAccount
 	public static boolean unlockEmployeeAccount(Employee emp, Employee managerAccount) throws Exception{
@@ -266,45 +367,9 @@ public class AccountHandling {
 		return false;
 	}
 	
-	// Method to get an employee by their username
-    public static Employee getEmployeeByUsername(String username) throws Exception {
-        ArrayList<Employee> employees = FileHelper.readEmployeeStorage(FileHelper.findEmployeeFile());
-
-        for (Employee employee : employees) {
-            if (employee.getUsername().equals(username)) {
-                return employee; // Return the matching employee
-            }
-        }
-
-        return null; // No matching employee found
-    }
 	
-	// Increment login attempts for a user
-    public static void incrementLoginAttempts(String username) throws Exception {
-        Path employeeFile = FileHelper.findEmployeeFile();
-        ArrayList<Employee> employees = FileHelper.readEmployeeStorage(employeeFile);
-
-        for (Employee employee : employees) {
-            if (employee.getUsername().equals(username)) {
-                employee.setLoginAttempts(employee.getLoginAttempts() + 1);
-                FileHelper.updateEmployee(employee);
-                return;
-            }
-        }
-    }
 	
-	// Check if a user's account is locked
-    public static boolean isAccountLocked(String username) throws Exception {
-        Path employeeFile = FileHelper.findEmployeeFile();
-        ArrayList<Employee> employees = FileHelper.readEmployeeStorage(employeeFile);
-
-        for (Employee employee : employees) {
-            if (employee.getUsername().equals(username)) {
-                return employee.getLoginAttempts() >= LOCKOUT_COUNT;
-            }
-        }
-        return false; // User not found
-    }
+	
 	
 	//updates a user account based on username. Verification done in controller.
 	public static void changeEmployeeAccount(String username, Employee acc) throws Exception {
@@ -372,42 +437,6 @@ public class AccountHandling {
 		}		
 	}
 	
-	//retrieves all the Account's stored in storage. 
-	public static ArrayList<Employee> readEmployeeStorage(Path p) throws Exception{
-		//Check that the file exists. 
-		if(!Files.exists(p))
-			throw new Exception("Cannot load settings because the settings file path could not be loaded.");
-		
-		//If the file is empty, return an empty list. 
-		if (p.toFile().length() == 0)
-			return new ArrayList<Employee>();
-		
-		//Read the file into an array list.
-		try {
-			XmlMapper mapper = new XmlMapper(); 
-			TypeReference<ArrayList<Employee>> typeRef = new TypeReference<ArrayList<Employee>>() {};
-			ArrayList<Employee> accounts = mapper.readValue(Files.newInputStream(p), typeRef);
-			return accounts;
-		} catch(FileNotFoundException e1) {
-			e1.printStackTrace();
-			throw new Exception("Failed find the settings file.");
-		}
-		catch (UnrecognizedPropertyException e1){
-			e1.printStackTrace();
-			throw new Exception("Unrecognized properties found or missing in the selected settings file.");
-		} 
-		catch(IOException e2) {
-			e2.printStackTrace();
-			throw new Exception("Failed to open, or close, the desired settings file." + e2);
-		}
-		catch(InaccessibleObjectException e3) {
-			throw new Exception("Tried to load in accessible object from settings... " + e3);
-		}
-		catch (Exception e4) {
-			e4.printStackTrace();
-			throw new Exception("Something went wrong while trying to load the selected settings file."); 
-		}
-	}
 
 	/*
 	 * CUSTOMER FILE HANDLING 
