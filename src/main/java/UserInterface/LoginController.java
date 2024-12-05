@@ -31,13 +31,18 @@ public class LoginController {
         try {
             Employee authenticatedEmployee = AccountHandling.logIn(username, password);
 
-            if (authenticatedEmployee == null) {
-                System.out.println("Account locked for user: " + username);
-                showAlert(Alert.AlertType.ERROR, "Account Locked", "Your account is locked. Please contact an administrator.");
-            } else if (authenticatedEmployee.getUsername() == null) {
+            //if password length is zero or it doesn't have a role, Issue Logging in
+            if (authenticatedEmployee.getPassword().length() == 0 || authenticatedEmployee.getAccountRole() == null) {
+                System.out.println(authenticatedEmployee.getUsername());
+                showAlert(Alert.AlertType.ERROR, "Issue Logging In", authenticatedEmployee.getUsername());
+            } 
+            //If the username is null, invalid log in attempt, for some reason. 
+            else if (authenticatedEmployee.getUsername() == null) {
                 System.out.println("Invalid login attempt for user: " + username);
                 handleFailedLogin(username);
-            } else {
+            } 
+            //Successful login attempt. 
+            else {
                 System.out.println("Login successful for user: " + username);
                 Session.setCurrentUser(authenticatedEmployee);
                 NavigationUtil.loadMainDashboard();

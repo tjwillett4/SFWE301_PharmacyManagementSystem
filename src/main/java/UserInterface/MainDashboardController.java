@@ -24,8 +24,8 @@ import java.util.Optional;
 public class MainDashboardController {
 
     @FXML private TabPane managementTabPane;
-    @FXML private Tab inventoryTab;
-    @FXML private Tab reportsTab;
+    //@FXML private Tab inventoryTab;
+    //@FXML private Tab reportsTab;
 
     @FXML
     private void initialize() {
@@ -39,8 +39,8 @@ public class MainDashboardController {
 
         // Disable management tabs for unauthorized users
         if (!hasManagementAccess) {
-            inventoryTab.setDisable(true);
-            reportsTab.setDisable(true);
+            //inventoryTab.setDisable(true);
+            //reportsTab.setDisable(true);
         }
     }
 
