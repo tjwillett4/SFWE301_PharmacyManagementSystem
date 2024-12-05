@@ -21,10 +21,11 @@
             <!-- General Actions Section -->
             <TitledPane expanded="true" text="General Actions">
                 <VBox alignment="TOP_LEFT" spacing="10" style="-fx-padding: 10;">
-                    <Button onAction="#handleProcessSale" style="-fx-font-size: 18px; -fx-pref-width: 200px; -fx-pref-height: 50px;" text="Process Sale" />
-                    <Button onAction="#handleRefillPrescription" style="-fx-font-size: 18px; -fx-pref-width: 200px; -fx-pref-height: 50px;" text="Refill Prescription" />
-                    <Button onAction="#handleViewInventory" style="-fx-font-size: 18px; -fx-pref-width: 200px; -fx-pref-height: 50px;" text="View Inventory" />
-                    <Button onAction="#handleSearchMedications" style="-fx-font-size: 18px; -fx-pref-width: 200px; -fx-pref-height: 50px;" text="Search Medications" />
+                    <Button fx:id="processSale" onAction="#handleProcessSale" style="-fx-font-size: 18px; -fx-pref-width: 200px; -fx-pref-height: 50px;" text="Process Sale" />
+                    <Button fx:id="refillPrescription" onAction="#handleRefillPrescription" style="-fx-font-size: 18px; -fx-pref-width: 200px; -fx-pref-height: 50px;" text="Refill Prescription" />
+                    <Button fx:id="inventoryTab" onAction="#handleViewInventory" style="-fx-font-size: 18px; -fx-pref-width: 200px; -fx-pref-height: 50px;" text="View Inventory" />
+                    <Button fx:id="searchMedications" onAction="#handleSearchMedications" style="-fx-font-size: 18px; -fx-pref-width: 200px; -fx-pref-height: 50px;" text="Search Medications" />
+                    <Button fx:id="createPrescription" onAction="#handlePrescriptionCreation" style="-fx-font-size: 18px; -fx-pref-width: 200px; -fx-pref-height: 50px;" text="Create Prescription" />
                 </VBox>
             </TitledPane>
 
@@ -32,10 +33,10 @@
             <TitledPane expanded="true" text="Management">
                 <VBox alignment="TOP_LEFT" spacing="10" style="-fx-padding: 10;">
                     <Label style="-fx-font-size: 20px;" text="Manager Actions" />
-                    <Button onAction="#handleAddEmployee" style="-fx-font-size: 18px; -fx-pref-width: 200px; -fx-pref-height: 50px;" text="Add Employee" />
-                    <Button onAction="#handleUnlockAccount" style="-fx-font-size: 18px; -fx-pref-width: 200px; -fx-pref-height: 50px;" text="Unlock Account" />
-                    <Button onAction="#handleGenerateReports" style="-fx-font-size: 18px; -fx-pref-width: 200px; -fx-pref-height: 50px;" text="Generate Reports" />
-                    <Button onAction="#handleUpdateInventory" style="-fx-font-size: 18px; -fx-pref-width: 200px; -fx-pref-height: 50px;" text="Update Inventory" />
+                    <Button fx:id="addEmployee" onAction="#handleAddEmployee" style="-fx-font-size: 18px; -fx-pref-width: 200px; -fx-pref-height: 50px;" text="Add Employee" />
+                    <Button fx:id="unlockAccount" onAction="#handleUnlockAccount" style="-fx-font-size: 18px; -fx-pref-width: 200px; -fx-pref-height: 50px;" text="Unlock Account" />
+                    <Button fx:id="reportsTab" onAction="#handleGenerateReports" style="-fx-font-size: 18px; -fx-pref-width: 200px; -fx-pref-height: 50px;" text="Generate Reports" />
+                    <Button fx:id="inventoryTab" onAction="#handleUpdateInventory" style="-fx-font-size: 18px; -fx-pref-width: 200px; -fx-pref-height: 50px;" text="Update Inventory" />
                 </VBox>
             </TitledPane>
             
