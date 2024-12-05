@@ -1,5 +1,6 @@
 package UserInterface;
 
+import BackEnd.Employee;
 import BackEnd.Role;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

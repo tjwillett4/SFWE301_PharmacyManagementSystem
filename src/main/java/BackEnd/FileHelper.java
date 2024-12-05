@@ -23,7 +23,9 @@ import java.util.stream.Collectors;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import InventoryControl.BatchMedication;
@@ -114,15 +116,29 @@ public class FileHelper {
 		return validCheck;
 	}
 	
+	public static XmlMapper createReadMapper() {
+		XmlMapper mapper = new XmlMapper();
+        mapper.registerModule(new JavaTimeModule());
+        mapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
+        return mapper;
+	}
+	
+	public static XmlMapper createWriteMapper() {
+		//serialization=PROTOBUF
+		XmlMapper mapper = new XmlMapper();
+        mapper.registerModule(new JavaTimeModule());
+        mapper.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
+        return mapper;
+	}
+	
+	
 	// Read employee storage from a file
     public static ArrayList<Employee> readEmployeeStorage(Path employeeFile) throws IOException {
         if (!Files.exists(employeeFile) || employeeFile.toFile().length() == 0) {
             return new ArrayList<>(); // Return an empty list if the file does not exist or is empty
         }
 
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
-
+        XmlMapper mapper = createReadMapper();
         try {
             return mapper.readValue(Files.newInputStream(employeeFile),
                     mapper.getTypeFactory().constructCollectionType(ArrayList.class, Employee.class));
@@ -155,8 +171,7 @@ public class FileHelper {
             employees.add(employee);
         }
 
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
+        XmlMapper mapper = createWriteMapper();
         mapper.writeValue(Files.newOutputStream(employeeFile), employees);
     }
     
@@ -167,8 +182,7 @@ public class FileHelper {
             return new ArrayList<>(); // Return an empty list if the file does not exist or is empty
         }
 
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
+        XmlMapper mapper = createReadMapper();
 
         try {
             ArrayList<BatchMedication> batchMedications = mapper.readValue(
@@ -218,8 +232,7 @@ public class FileHelper {
             return new ArrayList<>(); // Return an empty list if the file does not exist or is empty
         }
 
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
+        XmlMapper mapper = createReadMapper();
 
         try {
             return mapper.readValue(Files.newInputStream(customerFile),
@@ -234,8 +247,7 @@ public class FileHelper {
         ArrayList<Customer> customers = getAllCustomers();
 
         if (customers.removeIf(existingCustomer -> existingCustomer.getPhoneNum().equals(customer.getPhoneNum()))) {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.registerModule(new JavaTimeModule());
+        	XmlMapper mapper = createWriteMapper();
             mapper.writeValue(Files.newOutputStream(customerFile), customers);
         } else {
             throw new IOException("Customer not found in storage.");

@@ -28,13 +28,7 @@ public class AccountHandling {
     public static int getLockoutCount() {
         return LOCKOUT_COUNT;
     }
-	public enum actionType {
-		Manager,
-		Pharmacist,
-		PharmacyTech,
-		Cashier
-		
-	}
+
 	//Role requirement check. Takes in the empoyee attempting and a list of roles ["manager", "pharamacist"]
 	//TODO: Should this require password?
 	//TODO: Implement this with all account actions. 
@@ -89,9 +83,18 @@ public class AccountHandling {
 
     /**
      * Handles user login with a simplified check.
+     * returns Exception for file handling errors. 
+     * returns an Employee account with a username containing the error. 
+     * On successful login, return full account. 
+     * 
      */
 	public static Employee logIn(String username, String password) throws Exception {
 	    ArrayList<Employee> accounts = readEmployeeStorage(FileHelper.findEmployeeFile());
+	    
+	    //prompts:
+        String invalidPassword = "Invalid login attempt for username: " + username;
+        String accountLocked = "Account is locked for username: " + username;
+        String userNotFound = "User not found: " + username;
 
 	    for (Employee acc : accounts) {
 	        if (acc.getUsername().equals(username)) {
@@ -99,8 +102,8 @@ public class AccountHandling {
 
 	            // Check account lockout
 	            if (acc.getLoginAttempts() >= LOCKOUT_COUNT) {
-	                System.out.println("Account is locked for username: " + username);
-	                return null;
+	                System.out.println(accountLocked);
+	                return new Employee(accountLocked);
 	            }
 
 	            // Password check
@@ -112,14 +115,14 @@ public class AccountHandling {
 	            } else {
 	                acc.setLoginAttempts(acc.getLoginAttempts() + 1);
 	                writeEmployee(accounts); // Save changes
-	                System.out.println("Invalid login attempt for username: " + username);
-	                return new Employee(); // Empty Employee on failure
+	                System.out.println(invalidPassword);
+	                return new Employee(invalidPassword); // Empty Employee on failure
 	            }
 	        }
 	    }
 
-	    System.out.println("User not found: " + username);
-	    return new Employee(); // Empty Employee on failure
+	    System.out.println(userNotFound);
+	    return new Employee(userNotFound); // Empty Employee on failure
 	}
 
     /**
