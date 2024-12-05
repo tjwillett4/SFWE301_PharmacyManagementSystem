@@ -61,10 +61,16 @@ public class Medication {
 	}
 	public void setBatches(ArrayList<BatchMedication> batches) {
 		this.batches = batches;
+		this.stock.set(entireStockCount());
 	}
 	public void setSingleBatch(BatchMedication batch) {
 		this.batches = new ArrayList<BatchMedication>();
 		this.batches.add(batch);
+		this.stock.set(entireStockCount());
+	}
+	public void addSingleBatch(BatchMedication batch) {
+		this.batches.add(batch);
+		this.stock.set(entireStockCount());
 	}
 	public ArrayList<DrugInteraction> getInteractions() {
 		return interactions;
@@ -105,6 +111,28 @@ public class Medication {
 	public SimpleIntegerProperty stockProperty() {
         return stock;
     }
+	
+	public SimpleIntegerProperty entireStockCountSimpleInt() {
+		SimpleIntegerProperty sum = null;
+		sum.set(0);
+		
+		if (batches == null || batches.size() == 0)
+			return sum;
+		for (BatchMedication b : batches) {
+			sum.set(getStock() + b.getStock());
+		}
+		return sum;
+	}
+	
+	public int entireStockCount() {
+		int sum = 0;
+		if (batches == null || batches.size() == 0)
+			return sum;
+		for (BatchMedication b : batches) {
+			sum += b.getStock();
+		}
+		return sum;
+	}
 	
 	public void printMedicationInfo() 
 	{
