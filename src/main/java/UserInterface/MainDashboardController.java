@@ -1,47 +1,69 @@
 package UserInterface;
 
-import javafx.fxml.FXML;
-import javafx.scene.control.*;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.cell.PropertyValueFactory;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import BackEnd.AccountHandling;
+import BackEnd.Customer;
+import BackEnd.Employee;
+import BackEnd.FileHelper;
+import BackEnd.Role;
+import InventoryControl.PharmacyInventory;
+import Prescriptions.Medication;
+import Prescriptions.Prescription;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ChoiceDialog;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
-import InventoryControl.BatchMedication;
-import Prescriptions.Medication;
-import BackEnd.Role;
-import BackEnd.AccountHandling;
-import BackEnd.Employee;
-import BackEnd.FileHelper;
-import UserInterface.Session;
-import InventoryControl.PharmacyInventory;
-
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Optional;
 
 public class MainDashboardController {
 
-    @FXML private TabPane managementTabPane;
+	 @FXML private Button processSale;
+	 @FXML private Button refillPrescription;
+	 @FXML private Button createPrescription;
+	 @FXML private Button viewInventory;
+	 @FXML private Button searchMedications;
+	 @FXML private Button addEmployee;
+	 @FXML private Button unlockAccount;
+	 @FXML private Button reportsTab;
+	 @FXML private Button inventoryTab;
+
+	 // Prescription Table
+	 @FXML private TableView<Prescription> prescriptionTable;
+	 @FXML private TableColumn<Prescription, Integer> idColumn;
+	 @FXML private TableColumn<Prescription, String> customerColumn;
+	 @FXML private TableColumn<Prescription, String> medicationColumn;
+	 @FXML private TableColumn<Prescription, String> statusColumn;
+
+	 // Customer Table
+	 @FXML private TableView<Customer> customerTable;
+	 @FXML private TableColumn<Customer, String> customerNameColumn;
+	 @FXML private TableColumn<Customer, String> emailColumn;
+	 @FXML private TableColumn<Customer, String> phoneColumn;
+
+	 private ObservableList<Prescription> prescriptionData;
+	 private ObservableList<Customer> customerData;
 
 
-    @FXML private Button processSale;
-    @FXML private Button refillPrescription;
-    @FXML private Button createPrescription;
-    @FXML private Button viewInventory;
-    @FXML private Button searchMedications;
-    @FXML private Button addEmployee;
-    @FXML private Button unlockAccount;
-    @FXML private Button reportsTab;
-    @FXML private Button inventoryTab;
-
-
-    @FXML
-    private void initialize() {
-        // Restrict access to management features based on role
-        checkAuthorization();
-    }
+	 @FXML
+	 private void initialize() {
+	     checkAuthorization();
+	     initializePrescriptionTracking();
+	     loadCustomerData();
+	 }
     /*
      * 	Customer,
 	Cashier,
@@ -363,6 +385,79 @@ public class MainDashboardController {
         });
     }
 
+ // Initialize the prescription table
+    private void initializePrescriptionTracking() {
+        idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+        customerColumn.setCellValueFactory(new PropertyValueFactory<>("customerName"));
+        medicationColumn.setCellValueFactory(new PropertyValueFactory<>("medicationName"));
+        statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
+        loadPrescriptionData();
+    }
+
+    private void loadPrescriptionData() {
+        prescriptionData = FXCollections.observableArrayList(
+            new Prescription(1, "John Doe", "Ibuprofen", "Pending"),
+            new Prescription(2, "Jane Smith", "Paracetamol", "Approved")
+        );
+        prescriptionTable.setItems(prescriptionData);
+    }
+    
+    private void loadCustomerData() {
+        List<Customer> mockCustomers = new ArrayList<>();
+        mockCustomers.add(new Customer("John", "john.doe@example.com", "123-456-7890"));
+        mockCustomers.add(new Customer("Jane", "jane.smith@example.com", "987-654-3210"));
+
+        customerData = FXCollections.observableArrayList(mockCustomers);
+        customerTable.setItems(customerData);
+    }
+    
+    @FXML
+    private void handleApprovePrescription(ActionEvent event) {
+        Prescription selected = prescriptionTable.getSelectionModel().getSelectedItem();
+        if (selected != null && "Pending".equalsIgnoreCase(selected.getStatus())) {
+            selected.setStatus("Approved");
+            prescriptionTable.refresh();
+            showInfoAlert("Success", "Prescription approved.");
+        } else {
+            showErrorAlert("Error", "Select a valid pending prescription.");
+        }
+    }
+    
+    @FXML
+    private void handleCancelPrescription(ActionEvent event) {
+        Prescription selected = prescriptionTable.getSelectionModel().getSelectedItem();
+        if (selected != null && "Pending".equalsIgnoreCase(selected.getStatus())) {
+            selected.setStatus("Canceled");
+            prescriptionTable.refresh();
+            showInfoAlert("Success", "Prescription canceled.");
+        } else {
+            showErrorAlert("Error", "Select a valid pending prescription.");
+        }
+    }
+    
+    @FXML
+    private void handleViewCustomerDetails() {
+        Customer selected = customerTable.getSelectionModel().getSelectedItem();
+        if (selected != null) {
+            String details = "Name: " + selected.getFirstName() + "\n" +
+                    "Email: " + selected.getEmail() + "\n" +
+                    "Phone: " + selected.getPhoneNum();
+            showInfoAlert("Customer Details", details);
+        } else {
+            showErrorAlert("Error", "No customer selected.");
+        }
+    }
+    
+    @FXML
+    private void handleRefillCustomerPrescription() {
+        Customer selected = customerTable.getSelectionModel().getSelectedItem();
+        if (selected != null) {
+            showInfoAlert("Refill Successful", "Prescription refilled for: " + selected.getFirstName());
+        } else {
+            showErrorAlert("Error", "Select a customer to refill.");
+        }
+    }
+    
     // Method to handle generating reports
     @FXML
     private void handleGenerateReports(ActionEvent event) {
