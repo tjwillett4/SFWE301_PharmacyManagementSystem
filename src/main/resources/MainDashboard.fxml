@@ -27,7 +27,7 @@
 		                <VBox alignment="TOP_LEFT" spacing="10" style="-fx-padding: 10;">
 		                    <Button fx:id="processSale" onAction="#handleProcessSale" style="-fx-font-size: 18px; -fx-pref-width: 200px; -fx-pref-height: 50px;" text="Process Sale" />
 		                    <Button fx:id="refillPrescription" onAction="#handleRefillPrescription" style="-fx-font-size: 18px; -fx-pref-width: 200px; -fx-pref-height: 50px;" text="Refill Prescription" />
-		                    <Button fx:id="inventoryTab" onAction="#handleViewInventory" style="-fx-font-size: 18px; -fx-pref-width: 200px; -fx-pref-height: 50px;" text="View Inventory" />
+		                    <Button fx:id="viewInventory" onAction="#handleViewInventory" style="-fx-font-size: 18px; -fx-pref-width: 200px; -fx-pref-height: 50px;" text="View Inventory" />
 		                    <Button fx:id="searchMedications" onAction="#handleSearchMedications" style="-fx-font-size: 18px; -fx-pref-width: 200px; -fx-pref-height: 50px;" text="Search Medications" />
 		                    <Button fx:id="createPrescription" onAction="#handlePrescriptionCreation" style="-fx-font-size: 18px; -fx-pref-width: 200px; -fx-pref-height: 50px;" text="Create Prescription" />
 		                </VBox>
