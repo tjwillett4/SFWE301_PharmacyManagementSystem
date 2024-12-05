@@ -61,20 +61,118 @@ public class AccountHandling {
 		return false;
 	}
 	
-	
-	
-	/* 
-	 * EMPLOYEE ACCOUNTS 
-	 */
-	//adds account to account database. 
-	public static void addEmployeeAccount(Employee newEmployee) throws Exception{
-		//serialize account
-		Employee acc = Serializer.encryptEmployee(newEmployee);
-		
-		//Send off to update storage
-		writeEmployee(acc);
+	/**
+     * Creates a default admin account (bypassing encryption)
+     */
+	public static void createDefaultAccounts() throws Exception {
+	    // Define default accounts
+	    List<Employee> defaultAccounts = Arrays.asList(
+	        new Employee("admin", "password", Role.pharmacyManager) // Admin account
+	    );
+
+	    // Read existing accounts
+	    ArrayList<Employee> existingAccounts = readEmployeeStorage(FileHelper.findEmployeeFile());
+
+	    // Add default accounts if they don't exist
+	    for (Employee defaultAccount : defaultAccounts) {
+	        boolean accountExists = existingAccounts.stream()
+	            .anyMatch(emp -> emp.getUsername().equals(defaultAccount.getUsername()));
+
+	        if (!accountExists) {
+	            System.out.println("Creating default account: " + defaultAccount.getUsername());
+	            addEmployeeAccount(defaultAccount); // Add default account
+	        } else {
+	            System.out.println("Account already exists: " + defaultAccount.getUsername());
+	        }
+	    }
 	}
-	
+
+    /**
+     * Handles user login with a simplified check.
+     */
+	public static Employee logIn(String username, String password) throws Exception {
+	    ArrayList<Employee> accounts = readEmployeeStorage(FileHelper.findEmployeeFile());
+
+	    for (Employee acc : accounts) {
+	        if (acc.getUsername().equals(username)) {
+	            System.out.println("Found account for username: " + username);
+
+	            // Check account lockout
+	            if (acc.getLoginAttempts() >= LOCKOUT_COUNT) {
+	                System.out.println("Account is locked for username: " + username);
+	                return null;
+	            }
+
+	            // Password check
+	            if (acc.getPassword().equals(password)) {
+	                System.out.println("Login successful for username: " + username);
+	                acc.setLoginAttempts(0); // Reset login attempts
+	                writeEmployee(accounts); // Save changes
+	                return acc;
+	            } else {
+	                acc.setLoginAttempts(acc.getLoginAttempts() + 1);
+	                writeEmployee(accounts); // Save changes
+	                System.out.println("Invalid login attempt for username: " + username);
+	                return new Employee(); // Empty Employee on failure
+	            }
+	        }
+	    }
+
+	    System.out.println("User not found: " + username);
+	    return new Employee(); // Empty Employee on failure
+	}
+
+    /**
+     * Unlocks a locked account, ensuring only managers can perform this action.
+     */
+    public static boolean unlockEmployeeAccount(String username, String managerUsername) throws Exception {
+        Employee manager = getEmployeeByUsername(managerUsername);
+        if (manager == null || manager.getAccountRole() != Role.pharmacyManager) {
+            throw new Exception("Unauthorized: Only managers can unlock accounts.");
+        }
+
+        ArrayList<Employee> accounts = readEmployeeStorage(FileHelper.findEmployeeFile());
+
+        for (Employee acc : accounts) {
+            if (acc.getUsername().equals(username)) {
+                acc.setLoginAttempts(0); // Reset login attempts
+                writeEmployee(accounts);
+                System.out.println("Account unlocked for user: " + username);
+                return true;
+            }
+        }
+
+        System.out.println("User not found: " + username);
+        return false; // User not found
+    }
+
+    // Helper method to check if an employee exists
+    public static boolean employeeExists(String username) throws Exception {
+        ArrayList<Employee> employees = readEmployeeStorage(FileHelper.findEmployeeFile());
+
+        for (Employee emp : employees) {
+            if (emp.getUsername().equals(username)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Adds an employee to the storage (bypasses encryption for simplicity).
+     */
+    public static void addEmployeeAccount(Employee newEmployee) throws Exception {
+        // Get the current list of accounts
+        ArrayList<Employee> accounts = readEmployeeStorage(FileHelper.findEmployeeFile());
+
+        // Add the new account
+        accounts.add(newEmployee);
+
+        // Write the updated list back to storage
+        writeEmployee(accounts);
+    }
+
 	//Removes an employee from the database
 	public static boolean removeEmployeeAccount(Employee emp, Employee managerAccount) throws Exception {
 		//check for role requirement
@@ -97,6 +195,20 @@ public class AccountHandling {
 			}
 		}
 		return false;
+	}
+	
+	public static void updateEmployeeAccount(String username, Employee updatedEmployee) throws Exception {
+	    ArrayList<Employee> accounts = readEmployeeStorage(FileHelper.findEmployeeFile());
+
+	    for (Employee account : accounts) {
+	        if (account.getUsername().equals(username)) {
+	            accounts.set(accounts.indexOf(account), updatedEmployee); // Replace with updated employee
+	            writeEmployee(accounts); // Save changes to storage
+	            return;
+	        }
+	    }
+
+	    throw new Exception("Employee with username '" + username + "' not found.");
 	}
 	
 	//UnlockAccount
@@ -162,55 +274,6 @@ public class AccountHandling {
         }
         return false; // User not found
     }
-	
-	//finds and returns Account. 
-	//Returns null if lockout. Returns empty employee if failed.
-	public static Employee logIn(String username, String password) throws Exception{
-		
-		//get the accounts. 
-		ArrayList<Employee> accounts = readEmployeeStorage(FileHelper.findEmployeeFile());
-		
-		//See if the accounts list contains the username. 
-		for (Employee acc : accounts) {
-			//account found
-			if (acc.getUsername().equals(username)) {
-				//check account lockout. 
-				if (acc.getLoginAttempts() >= LOCKOUT_COUNT)
-					return null;
-				
-				String secCode = Serializer.decryptString(acc.getSecCodePass(), password);
-				if (Serializer.decryptString(acc.getPassword(), secCode).equals(password)) {
-					//Reset the account lockout count, check first to reduce load. 
-					if (acc.getLoginAttempts() > 0) {
-						acc.setLoginAttempts(0);
-						writeEmployee(accounts);
-					}
-					
-					return Serializer.decryptEmployee(acc, secCode);	
-				}
-				
-				//log in failed, update login attempts. 
-				acc.setLoginAttempts(acc.getLoginAttempts() + 1);
-				writeEmployee(accounts);
-				return new Employee();
-			}
-		}
-		return new Employee();
-	}
-	
-	//check if the account exists based off a user name. 
-	public static Boolean employeeExists(String username) throws Exception {
-		ArrayList<Employee> employees = readEmployeeStorage(FileHelper.findEmployeeFile());
-		
-		//See if the accounts list contains the username. 
-		for (Employee emp : employees) {
-			if (emp.getUsername().equals(username)) {
-				return true;
-			}
-		}
-		
-		return false;
-	}
 	
 	//updates a user account based on username. Verification done in controller.
 	public static void changeEmployeeAccount(String username, Employee acc) throws Exception {
@@ -314,7 +377,7 @@ public class AccountHandling {
 			throw new Exception("Something went wrong while trying to load the selected settings file."); 
 		}
 	}
-	
+
 	/*
 	 * CUSTOMER FILE HANDLING 
 	 */
@@ -398,5 +461,4 @@ public class AccountHandling {
 			throw new Exception("Something went wrong while trying to load the selected settings file."); 
 		}
 	}
-
 }

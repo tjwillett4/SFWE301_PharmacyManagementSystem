@@ -20,7 +20,7 @@ public class ManagementInterfaceController {
         if (currentRole != Role.pharmacyManager && currentRole != Role.pharmacist) {
             showAlert(Alert.AlertType.ERROR, "Unauthorized Access", "You do not have permission to access the Management Interface.");
             //redirect to dashboard or login
-            NavigationUtil.loadMainDashboard(null);
+            NavigationUtil.loadMainDashboard();
         }
     }
 
@@ -37,7 +37,7 @@ public class ManagementInterfaceController {
 
     @FXML
     private void goToDashboard(ActionEvent event) {
-        NavigationUtil.loadMainDashboard(event);
+        NavigationUtil.loadMainDashboard();
     }
 
     @FXML

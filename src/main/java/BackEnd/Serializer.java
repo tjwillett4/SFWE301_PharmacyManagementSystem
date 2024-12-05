@@ -67,37 +67,29 @@ public class Serializer {
 	
 	
 	//TODO!
-	/* ACCOUNT_INFO HANDLING */
-	public static Employee encryptEmployee(Employee emp) throws Exception{
-		String password = emp.getSecCodePass();
-		StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
-		encryptor.setPassword(password);                         // we HAVE TO set a password
-		
-		//encrypt any info needed to be encrypted.
-		emp.setPassword(encryptor.encrypt(emp.getPassword()));
-		emp.setSecCodePass(encryptString(emp.getSecCodePass(), emp.getPassword()));
-		
-		return emp;
-	}
-	public static Employee decryptEmployee(Employee account, String password) throws Exception {
-		StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
-		encryptor.setPassword(password);                         // we HAVE TO set a password
-		
-		//decrypt any encrypted info
-		account.setPassword(encryptor.decrypt(account.getPassword()));
-		account.setSecCodePass(password);
-		
-		return account;
-		
-	}
-	
-	public static Customer encryptCustomer(Customer account) throws Exception{
-		return new Customer();
-	}
-	public static Customer decryptEmployee(Customer account, String password) throws Exception {
-		return new Customer();
+	/* ACCOUNT_INFO HANDLING 
+	 */
+	public static Employee encryptEmployee(Employee emp) throws Exception {
+	    String password = emp.getSecCodePass();
+	    StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
+	    encryptor.setPassword(password); // Use secCodePass for encryption
+
+	    // Encrypt fields
+	    emp.setPassword(encryptor.encrypt(emp.getPassword())); // Encrypt password
+	    return emp;
 	}
 
+	public static Employee decryptEmployee(Employee account, String password) throws Exception {
+	    StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
+	    encryptor.setPassword(password); // Use secCodePass for decryption
+
+	    // Decrypt fields
+	    account.setPassword(encryptor.decrypt(account.getPassword())); // Decrypt password
+	    account.setSecCodePass(password); // Retain secCodePass for future operations
+
+	    return account;
+	}
+	
 	
 	
 	/* FILE HANDLING */

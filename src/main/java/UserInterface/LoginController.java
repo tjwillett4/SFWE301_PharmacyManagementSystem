@@ -7,6 +7,7 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 import javafx.event.ActionEvent;
 import BackEnd.FileHelper;
+import BackEnd.Role;
 import BackEnd.Employee;
 import BackEnd.AccountHandling;
 import UserInterface.Session;
@@ -27,22 +28,41 @@ public class LoginController {
         String username = usernameField.getText();
         String password = passwordField.getText();
 
-        // Hardcoded credentials for testing
-        if ("admin".equals(username) && "password".equals(password)) {
-            // Successful login
-            try {
-                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/MainDashboard.fxml"));
-                Scene scene = new Scene(fxmlLoader.load());
-                Stage stage = (Stage) usernameField.getScene().getWindow(); // Get the current stage
-                stage.setScene(scene);
-                stage.setTitle("Pharmacy Management System - Main Dashboard");
-            } catch (IOException e) {
-                e.printStackTrace();
-                showAlert(Alert.AlertType.ERROR, "Error", "Failed to load the dashboard.");
+        try {
+            Employee authenticatedEmployee = AccountHandling.logIn(username, password);
+
+            if (authenticatedEmployee == null) {
+                System.out.println("Account locked for user: " + username);
+                showAlert(Alert.AlertType.ERROR, "Account Locked", "Your account is locked. Please contact an administrator.");
+            } else if (authenticatedEmployee.getUsername() == null) {
+                System.out.println("Invalid login attempt for user: " + username);
+                handleFailedLogin(username);
+            } else {
+                System.out.println("Login successful for user: " + username);
+                Session.setCurrentUser(authenticatedEmployee);
+                NavigationUtil.loadMainDashboard();
             }
-        } else {
-            // Invalid credentials
-            errorMessage.setText("Invalid username or password.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Error", "An error occurred during login.");
+        }
+    }
+    
+    private void redirectToDashboard(Employee employee, ActionEvent event) {
+        Role role = employee.getAccountRole();
+
+        switch (role) {
+            case pharmacyManager:
+                NavigationUtil.loadMainDashboard(); // Full access for managers
+                break;
+            case pharmacyTech:
+                NavigationUtil.loadMainDashboard(); // Limited dashboard for tech
+                break;
+            case Cashier:
+                NavigationUtil.loadMainDashboard(); // Simplified dashboard for cashier
+                break;
+            default:
+                showAlert(Alert.AlertType.ERROR, "Unauthorized", "Your role is not supported in the system.");
         }
     }
     /*

@@ -1,36 +1,33 @@
 package com.sfwe.pharmacy;
 
-import BackEnd.Employee;
-import Prescriptions.Medication;
-import InventoryControl.BatchMedication;
-import InventoryControl.PharmacyInventory;
-import Prescriptions.DrugInteraction;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-
 import BackEnd.AccountHandling;
-
-
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class App extends Application {
-
-	@Override
+    @Override
     public void start(Stage primaryStage) {
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/Login.fxml"));
-            Scene scene = new Scene(fxmlLoader.load());
-            primaryStage.setTitle("Pharmacy Management System - Login");
+            // Ensure default accounts are created at the start of the application
+            AccountHandling.createDefaultAccounts();
+            System.out.println("Default accounts created successfully.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Error creating default accounts: " + e.getMessage());
+        }
+
+        try {
+            // Load the login screen
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Login.fxml"));
+            Scene scene = new Scene(loader.load());
+            primaryStage.setTitle("Pharmacy Management System");
             primaryStage.setScene(scene);
             primaryStage.show();
         } catch (Exception e) {
             e.printStackTrace();
-            System.err.println("Error: Could not load FXML file.");
+            System.err.println("Error loading the Login screen: " + e.getMessage());
         }
     }
 

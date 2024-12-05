@@ -9,16 +9,18 @@ import javafx.stage.Stage;
 
 public class NavigationUtil {
 
-    public static void loadMainDashboard(ActionEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(NavigationUtil.class.getResource("/MainDashboard.fxml"));
-            Scene scene = new Scene(loader.load());
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(scene);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+	public static void loadMainDashboard() {
+	    try {
+	        FXMLLoader loader = new FXMLLoader(NavigationUtil.class.getResource("/MainDashboard.fxml"));
+	        Scene scene = new Scene(loader.load());
+	        Stage stage = new Stage();
+	        stage.setScene(scene);
+	        stage.setTitle("Pharmacy Management System - Dashboard");
+	        stage.show();
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	}
 
     public static void loadLoginScreen(ActionEvent event) {
     	System.out.println("Navigating to Login Screen...");
@@ -79,6 +81,30 @@ public class NavigationUtil {
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println("Error: Unable to load Management Interface.");
+        }
+    }
+    
+    public static void loadTechDashboard(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(NavigationUtil.class.getResource("/TechDashboard.fxml"));
+            Scene scene = new Scene(loader.load());
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(scene);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Error: Unable to load Tech Dashboard.");
+        }
+    }
+
+    public static void loadCashierDashboard(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(NavigationUtil.class.getResource("/CashierDashboard.fxml"));
+            Scene scene = new Scene(loader.load());
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(scene);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Error: Unable to load Cashier Dashboard.");
         }
     }
 
