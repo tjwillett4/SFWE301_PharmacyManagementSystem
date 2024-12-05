@@ -40,6 +40,9 @@ public class MainDashboardController {
 	 @FXML private Button unlockAccount;
 	 @FXML private Button reportsTab;
 	 @FXML private Button inventoryTab;
+	 @FXML private Button resetEmployeePassword;
+	 @FXML private Button addCustomerButton;
+	 @FXML private Button removeCustomerButton;
 
 	 // Prescription Table
 	 @FXML private TableView<Prescription> prescriptionTable;
@@ -55,35 +58,19 @@ public class MainDashboardController {
 	 @FXML private TableColumn<Customer, String> phoneColumn;
 
 	 private ObservableList<Prescription> prescriptionData;
-	 private ObservableList<Customer> customerData;
+	 private ObservableList<Customer> customerData = FXCollections.observableArrayList();
 
 
-<<<<<<< HEAD
+
 	 @FXML
 	 private void initialize() {
-	     checkAuthorization();
-	     initializePrescriptionTracking();
-	     loadCustomerData();
+		 checkAuthorization();
+		    initializePrescriptionTracking();
+		    initializeCustomerTable();
+		    loadCustomerData();
 	 }
-=======
-    @FXML private Button processSale;
-    @FXML private Button refillPrescription;
-    @FXML private Button createPrescription;
-    @FXML private Button viewInventory;
-    @FXML private Button searchMedications;
-    @FXML private Button addEmployee;
-    @FXML private Button unlockAccount;
-    @FXML private Button reportsTab;
-    @FXML private Button inventoryTab;
-    @FXML private Button resetEmployeePassword;
 
 
-    @FXML
-    private void initialize() {
-        // Restrict access to management features based on role
-        checkAuthorization();
-    }
->>>>>>> 85d3bbe92756db77b4e5fe87f86c460dfa52c7b1
     /*
      * 	Customer,
 	Cashier,
@@ -92,7 +79,14 @@ public class MainDashboardController {
 	pharmacyManager,
 	doctor
      */
+	 
+	 private void initializeCustomerTable() {
+		    customerNameColumn.setCellValueFactory(new PropertyValueFactory<>("firstName"));
+		    emailColumn.setCellValueFactory(new PropertyValueFactory<>("email"));
+		    phoneColumn.setCellValueFactory(new PropertyValueFactory<>("phoneNum"));
 
+		    customerTable.setItems(customerData);
+		}
     //Show or hide UI based on the permissions of the user. 
     private void checkAuthorization() {
         Role currentRole = Session.getCurrentUser().getAccountRole();
@@ -658,6 +652,78 @@ public class MainDashboardController {
         } catch (Exception e) {
             e.printStackTrace();
             showErrorAlert("Error", "Unable to process refill: " + e.getMessage());
+        }
+    }
+    
+    @FXML
+    private void handleAddCustomer(ActionEvent event) {
+        try {
+            // Prompt for customer details
+            TextInputDialog firstNameDialog = new TextInputDialog();
+            firstNameDialog.setTitle("Add Customer");
+            firstNameDialog.setHeaderText("Enter Customer First Name:");
+            firstNameDialog.setContentText("First Name:");
+            Optional<String> firstNameResult = firstNameDialog.showAndWait();
+
+            if (!firstNameResult.isPresent() || firstNameResult.get().trim().isEmpty()) {
+                showError("Error", "Customer First Name is required.");
+                return;
+            }
+
+            TextInputDialog emailDialog = new TextInputDialog();
+            emailDialog.setTitle("Add Customer");
+            emailDialog.setHeaderText("Enter Customer Email:");
+            emailDialog.setContentText("Email:");
+            Optional<String> emailResult = emailDialog.showAndWait();
+
+            if (!emailResult.isPresent() || emailResult.get().trim().isEmpty()) {
+                showError("Error", "Customer Email is required.");
+                return;
+            }
+
+            TextInputDialog phoneDialog = new TextInputDialog();
+            phoneDialog.setTitle("Add Customer");
+            phoneDialog.setHeaderText("Enter Customer Phone Number:");
+            phoneDialog.setContentText("Phone Number:");
+            Optional<String> phoneResult = phoneDialog.showAndWait();
+
+            if (!phoneResult.isPresent() || phoneResult.get().trim().isEmpty()) {
+                showError("Error", "Customer Phone Number is required.");
+                return;
+            }
+
+            // Create and add the new customer to the data list
+            Customer newCustomer = new Customer(firstNameResult.get(), emailResult.get(), phoneResult.get());
+            customerData.add(newCustomer);
+            customerTable.refresh();
+
+            showInfo("Success", "Customer added successfully.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            showError("Error", "Unable to add customer: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Handles removing a selected customer.
+     */
+    @FXML
+    private void handleRemoveCustomer(ActionEvent event) {
+        Customer selectedCustomer = customerTable.getSelectionModel().getSelectedItem();
+        if (selectedCustomer != null) {
+            Alert confirmationAlert = new Alert(AlertType.CONFIRMATION);
+            confirmationAlert.setTitle("Remove Customer");
+            confirmationAlert.setHeaderText(null);
+            confirmationAlert.setContentText("Are you sure you want to remove the selected customer?");
+            Optional<ButtonType> result = confirmationAlert.showAndWait();
+
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                customerData.remove(selectedCustomer);
+                customerTable.refresh();
+                showInfo("Success", "Customer removed successfully.");
+            }
+        } else {
+            showError("Error", "No customer selected to remove.");
         }
     }
     
