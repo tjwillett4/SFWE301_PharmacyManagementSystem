@@ -35,6 +35,7 @@ public class MainDashboardController {
     @FXML private Button unlockAccount;
     @FXML private Button reportsTab;
     @FXML private Button inventoryTab;
+    @FXML private Button resetEmployeePassword;
 
 
     @FXML
@@ -67,6 +68,7 @@ public class MainDashboardController {
 	            unlockAccount.setDisable(true);
 	            reportsTab.setDisable(true);
 	            inventoryTab.setDisable(true);
+	            resetEmployeePassword.setDisable(true);
 	        	break;
 	        case Cashier:
 	        	//Only sales permissions
@@ -78,6 +80,7 @@ public class MainDashboardController {
 	            unlockAccount.setDisable(true);
 	            reportsTab.setDisable(true);
 	            inventoryTab.setDisable(true);
+	            resetEmployeePassword.setDisable(true);
 	        	break;
 	        case pharmacyTech:
 	        	//Sale plus prescription/medication info. Cannot create prescriptions, only fulfill. 
@@ -87,6 +90,7 @@ public class MainDashboardController {
 	            unlockAccount.setDisable(true);
 	            reportsTab.setDisable(true);
 	            inventoryTab.setDisable(true);
+	            resetEmployeePassword.setDisable(true);
 	        	break;
 	        case pharmacist:
 	        	//Sale plus prescription/medication info. No management actions. 
@@ -94,6 +98,7 @@ public class MainDashboardController {
 	            unlockAccount.setDisable(true);
 	            reportsTab.setDisable(true);
 	            inventoryTab.setDisable(true);
+	            resetEmployeePassword.setDisable(true);
 	        	break;
 	        case pharmacyManager:
 	        	//All permissions enabled. 
@@ -126,6 +131,8 @@ public class MainDashboardController {
         		
         }
     }
+    
+
 
     @FXML
     private void handleLogout(ActionEvent event) {
@@ -142,6 +149,48 @@ public class MainDashboardController {
         exitConfirmation.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
                 System.exit(0);
+            }
+        });
+    }
+    
+    @FXML
+    private void handleEmployeePasswordReset(ActionEvent event) {
+    	TextInputDialog dialogUsername = new TextInputDialog();
+    	dialogUsername.setTitle("Reset Employee Password");
+    	dialogUsername.setHeaderText("Resetting an employee password should only be done if the employee forgot their password.");
+    	dialogUsername.setContentText("Enter the username of the account:");
+    	
+    	TextInputDialog dialogNewPassword = new TextInputDialog();
+    	dialogNewPassword.setTitle("Reset EmployeePassword");
+    	dialogNewPassword.setHeaderText("Resetting an employee password should only be done if the employee forgot their password.");
+    	dialogNewPassword.setContentText("Enter the new password for the account");
+        
+    	dialogUsername.showAndWait().ifPresent(username -> {
+            try {
+            	Employee emp = AccountHandling.getEmployeeByUsername(username);
+            	
+            	if (emp == null) {
+            		showInfo("Error", "User not found.");
+            		return;
+            	}
+            	else {
+            		dialogNewPassword.showAndWait().ifPresent(password -> {
+            			emp.setPassword(password);
+            			try {
+							AccountHandling.updateEmployeeAccount(username, emp);
+							showInfo("Success", "Account password successfully changed for user: " + username);
+						} catch (Exception e) {
+							e.printStackTrace();
+							showError("Error", "Failed to update account password: " + e.getMessage());
+						}
+            		});
+            		
+            		
+            		
+            	}
+            } catch (Exception e) {
+                e.printStackTrace();
+                showError("Error", "Failed to update account password: " + e.getMessage());
             }
         });
     }
