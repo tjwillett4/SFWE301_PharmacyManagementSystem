@@ -49,7 +49,6 @@
                 <TitledPane expanded="true" text="My Account">
                     <VBox alignment="TOP_CENTER" spacing="10" style="-fx-padding: 10;">
                         <Button onAction="#handleUpdateAccount" style="-fx-font-size: 14px; -fx-pref-width: 180px;" text="Update Password" />
-                        <Button onAction="#handleUpdateContactInfo" style="-fx-font-size: 14px; -fx-pref-width: 180px;" text="Update Contact Information" />
                     </VBox>
                 </TitledPane>
             </VBox>
