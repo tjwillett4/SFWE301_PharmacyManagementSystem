@@ -66,6 +66,9 @@ public class LoginController {
             case Cashier:
                 NavigationUtil.loadMainDashboard(); // Simplified dashboard for cashier
                 break;
+            case pharmacist:
+                NavigationUtil.loadMainDashboard(); // Simplified dashboard for cashier
+                break;
             default:
                 showAlert(Alert.AlertType.ERROR, "Unauthorized", "Your role is not supported in the system.");
         }
