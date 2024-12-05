@@ -39,6 +39,7 @@
                     <VBox alignment="TOP_LEFT" spacing="10" style="-fx-padding: 10;">
                         <Label style="-fx-font-size: 20px;" text="Manager Actions" />
                         <Button fx:id="addEmployee" onAction="#handleAddEmployee" style="-fx-font-size: 18px; -fx-pref-width: 200px; -fx-pref-height: 50px;" text="Add Employee" />
+                        <Button text="Delete Account" onAction="#handleDeleteAccount" />
                         <Button fx:id="unlockAccount" onAction="#handleUnlockAccount" style="-fx-font-size: 18px; -fx-pref-width: 200px; -fx-pref-height: 50px;" text="Unlock Account" />
                         <Button fx:id="reportsTab" onAction="#handleGenerateReports" style="-fx-font-size: 18px; -fx-pref-width: 200px; -fx-pref-height: 50px;" text="Generate Reports" />
                         <Button fx:id="inventoryTab" onAction="#handleUpdateInventory" style="-fx-font-size: 18px; -fx-pref-width: 200px; -fx-pref-height: 50px;" text="Update Inventory" />
@@ -49,7 +50,6 @@
                 <TitledPane expanded="true" text="My Account">
                     <VBox alignment="TOP_CENTER" spacing="10" style="-fx-padding: 10;">
                         <Button onAction="#handleUpdateAccount" style="-fx-font-size: 14px; -fx-pref-width: 180px;" text="Update Password" />
-                        <Button onAction="#handleUpdateContactInfo" style="-fx-font-size: 14px; -fx-pref-width: 180px;" text="Update Contact Information" />
                     </VBox>
                 </TitledPane>
             </VBox>
@@ -61,10 +61,10 @@
                     <VBox alignment="TOP_CENTER" spacing="10" style="-fx-padding: 10;">
                         <TableView fx:id="prescriptionTable" style="-fx-font-size: 16px; -fx-pref-height: 250px; -fx-pref-width: 500px;">
                             <columns>
-                                <TableColumn fx:id="idColumn" style="-fx-pref-width: 50px;" text="ID" />
-                                <TableColumn fx:id="customerColumn" style="-fx-pref-width: 200px;" text="Customer" />
-                                <TableColumn fx:id="medicationColumn" style="-fx-pref-width: 150px;" text="Medication" />
-                                <TableColumn fx:id="statusColumn" style="-fx-pref-width: 100px;" text="Status" />
+                                <TableColumn fx:id="idColumn" text="ID" style="-fx-pref-width: 50px;" />
+                                <TableColumn fx:id="customerColumn" text="Customer" style="-fx-pref-width: 200px;" />
+                                <TableColumn fx:id="medicationColumn" text="Medication" style="-fx-pref-width: 150px;" />
+                                <TableColumn fx:id="statusColumn" text="Status" style="-fx-pref-width: 100px;" />
                             </columns>
                         </TableView>
                         <HBox alignment="CENTER" spacing="10">
@@ -79,16 +79,19 @@
                     <VBox alignment="TOP_CENTER" spacing="10" style="-fx-padding: 10;">
                         <TableView fx:id="customerTable" style="-fx-font-size: 16px; -fx-pref-height: 200px;">
                             <columns>
-                                <TableColumn fx:id="customerNameColumn" style="-fx-pref-width: 150px;" text="Name" />
-                                <TableColumn fx:id="emailColumn" style="-fx-pref-width: 200px;" text="Email" />
-                                <TableColumn fx:id="phoneColumn" style="-fx-pref-width: 150px;" text="Phone" />
+                                <TableColumn fx:id="customerNameColumn" text="Name" style="-fx-pref-width: 150px;" />
+                                <TableColumn fx:id="emailColumn" text="Email" style="-fx-pref-width: 200px;" />
+                                <TableColumn fx:id="phoneColumn" text="Phone" style="-fx-pref-width: 150px;" />
                             </columns>
                         </TableView>
+                        <HBox alignment="CENTER" spacing="10">
+                            <Button fx:id="addCustomerButton" onAction="#handleAddCustomer" text="Add Customer" style="-fx-font-size: 14px;" />
+                            <Button fx:id="removeCustomerButton" onAction="#handleRemoveCustomer" text="Remove Customer" style="-fx-font-size: 14px;" />
+                        </HBox>
                     </VBox>
                 </TitledPane>
             </VBox>
         </HBox>
-
     </center>
 
     <!-- Footer -->

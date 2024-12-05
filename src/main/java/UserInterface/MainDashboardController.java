@@ -41,6 +41,8 @@ public class MainDashboardController {
 	 @FXML private Button reportsTab;
 	 @FXML private Button inventoryTab;
 	 @FXML private Button resetEmployeePassword;
+	 @FXML private Button addCustomerButton;
+	 @FXML private Button removeCustomerButton;
 
 	 // Prescription Table
 	 @FXML private TableView<Prescription> prescriptionTable;
@@ -56,17 +58,17 @@ public class MainDashboardController {
 	 @FXML private TableColumn<Customer, String> phoneColumn;
 
 	 private ObservableList<Prescription> prescriptionData;
-	 private ObservableList<Customer> customerData;
+	 private ObservableList<Customer> customerData = FXCollections.observableArrayList();
+
 
 
 	 @FXML
 	 private void initialize() {
-	     checkAuthorization();
-	     initializePrescriptionTracking();
-	     loadCustomerData();
+		 checkAuthorization();
+		    initializePrescriptionTracking();
+		    initializeCustomerTable();
+		    loadCustomerData();
 	 }
-
-    
 
 
     /*
@@ -77,7 +79,14 @@ public class MainDashboardController {
 	pharmacyManager,
 	doctor
      */
+	 
+	 private void initializeCustomerTable() {
+		    customerNameColumn.setCellValueFactory(new PropertyValueFactory<>("firstName"));
+		    emailColumn.setCellValueFactory(new PropertyValueFactory<>("email"));
+		    phoneColumn.setCellValueFactory(new PropertyValueFactory<>("phoneNum"));
 
+		    customerTable.setItems(customerData);
+		}
     //Show or hide UI based on the permissions of the user. 
     private void checkAuthorization() {
         Role currentRole = Session.getCurrentUser().getAccountRole();
@@ -158,7 +167,44 @@ public class MainDashboardController {
         }
     }
     
+    @FXML
+    private void handleDeleteAccount(ActionEvent event) {
+        // Prompt the manager to enter the username of the account to delete
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Delete Account");
+        dialog.setHeaderText("Delete Employee Account");
+        dialog.setContentText("Enter the username of the account to delete:");
 
+        // Handle the input from the dialog
+        Optional<String> result = dialog.showAndWait();
+        result.ifPresent(username -> {
+            try {
+                // Check if the account exists
+                Employee emp = AccountHandling.getEmployeeByUsername(username);
+                if (emp == null) {
+                    showErrorAlert("Error", "No account found for username: " + username);
+                    return;
+                }
+
+                // Confirm deletion
+                Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION);
+                confirmationAlert.setTitle("Confirm Deletion");
+                confirmationAlert.setHeaderText("Are you sure?");
+                confirmationAlert.setContentText("Do you really want to delete the account for username: " + username + "?");
+
+                Optional<ButtonType> confirmation = confirmationAlert.showAndWait();
+                if (confirmation.isPresent() && confirmation.get() == ButtonType.OK) {
+                    // Perform the deletion
+                    AccountHandling.deleteEmployeeAccount(username);
+                    showInfoAlert("Success", "Account for username: " + username + " deleted successfully.");
+                }
+            } catch (Exception e) {
+                // Log the exception and show an error alert
+                e.printStackTrace();
+                showErrorAlert("Error", "Failed to delete account: " + e.getMessage());
+            }
+        });
+    }
 
     @FXML
     private void handleLogout(ActionEvent event) {
@@ -552,9 +598,6 @@ public class MainDashboardController {
     
     @FXML
     private void handleUpdateInventory(ActionEvent event) {
-    	
-    	NavigationUtil.loadMedicationScreen(event);
-    	/*
         try {
             TextInputDialog dialog = new TextInputDialog();
             dialog.setTitle("Update Inventory");
@@ -582,7 +625,6 @@ public class MainDashboardController {
         } catch (Exception e) {
             showErrorAlert("Error Updating Inventory", e.getMessage());
         }
-        */
     }
 
     @FXML
@@ -647,6 +689,78 @@ public class MainDashboardController {
         } catch (Exception e) {
             e.printStackTrace();
             showErrorAlert("Error", "Unable to process refill: " + e.getMessage());
+        }
+    }
+    
+    @FXML
+    private void handleAddCustomer(ActionEvent event) {
+        try {
+            // Prompt for customer details
+            TextInputDialog firstNameDialog = new TextInputDialog();
+            firstNameDialog.setTitle("Add Customer");
+            firstNameDialog.setHeaderText("Enter Customer First Name:");
+            firstNameDialog.setContentText("First Name:");
+            Optional<String> firstNameResult = firstNameDialog.showAndWait();
+
+            if (!firstNameResult.isPresent() || firstNameResult.get().trim().isEmpty()) {
+                showError("Error", "Customer First Name is required.");
+                return;
+            }
+
+            TextInputDialog emailDialog = new TextInputDialog();
+            emailDialog.setTitle("Add Customer");
+            emailDialog.setHeaderText("Enter Customer Email:");
+            emailDialog.setContentText("Email:");
+            Optional<String> emailResult = emailDialog.showAndWait();
+
+            if (!emailResult.isPresent() || emailResult.get().trim().isEmpty()) {
+                showError("Error", "Customer Email is required.");
+                return;
+            }
+
+            TextInputDialog phoneDialog = new TextInputDialog();
+            phoneDialog.setTitle("Add Customer");
+            phoneDialog.setHeaderText("Enter Customer Phone Number:");
+            phoneDialog.setContentText("Phone Number:");
+            Optional<String> phoneResult = phoneDialog.showAndWait();
+
+            if (!phoneResult.isPresent() || phoneResult.get().trim().isEmpty()) {
+                showError("Error", "Customer Phone Number is required.");
+                return;
+            }
+
+            // Create and add the new customer to the data list
+            Customer newCustomer = new Customer(firstNameResult.get(), emailResult.get(), phoneResult.get());
+            customerData.add(newCustomer);
+            customerTable.refresh();
+
+            showInfo("Success", "Customer added successfully.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            showError("Error", "Unable to add customer: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Handles removing a selected customer.
+     */
+    @FXML
+    private void handleRemoveCustomer(ActionEvent event) {
+        Customer selectedCustomer = customerTable.getSelectionModel().getSelectedItem();
+        if (selectedCustomer != null) {
+            Alert confirmationAlert = new Alert(AlertType.CONFIRMATION);
+            confirmationAlert.setTitle("Remove Customer");
+            confirmationAlert.setHeaderText(null);
+            confirmationAlert.setContentText("Are you sure you want to remove the selected customer?");
+            Optional<ButtonType> result = confirmationAlert.showAndWait();
+
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                customerData.remove(selectedCustomer);
+                customerTable.refresh();
+                showInfo("Success", "Customer removed successfully.");
+            }
+        } else {
+            showError("Error", "No customer selected to remove.");
         }
     }
     
