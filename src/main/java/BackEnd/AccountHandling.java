@@ -10,7 +10,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
@@ -304,7 +303,7 @@ public class AccountHandling {
 	private static void writeEmployee(Employee encryptedAccount) throws Exception {
 		//Get file
 		Path p = FileHelper.findEmployeeFile();
-		ObjectMapper mapper = new XmlMapper();
+		XmlMapper mapper = new XmlMapper();
 		mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 		
 		//Get the current list of accounts and add the new one to it.
@@ -332,7 +331,7 @@ public class AccountHandling {
 			e.printStackTrace();
 			throw new Exception("Error finding or creating file! " + e);
 		}
-		ObjectMapper mapper = new XmlMapper();
+		XmlMapper mapper = new XmlMapper();
 		mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 		
 		//rewrite the file with the new account added.
@@ -356,7 +355,7 @@ public class AccountHandling {
 		
 		//Read the file into an array list.
 		try {
-			ObjectMapper mapper = new XmlMapper(); 
+			XmlMapper mapper = new XmlMapper(); 
 			TypeReference<ArrayList<Employee>> typeRef = new TypeReference<ArrayList<Employee>>() {};
 			ArrayList<Employee> accounts = mapper.readValue(Files.newInputStream(p), typeRef);
 			return accounts;
@@ -388,7 +387,7 @@ public class AccountHandling {
 	private static void writeCustomer(Customer encryptedAccount) throws Exception {
 		//Get file
 		Path p = FileHelper.findCustomerFile();
-		ObjectMapper mapper = new XmlMapper();
+		XmlMapper mapper = new XmlMapper();
 		mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 		
 		//Get the current list of accounts and add the new one to it.
@@ -416,7 +415,7 @@ public class AccountHandling {
 			e.printStackTrace();
 			throw new Exception("Error finding or creating file! " + e);
 		}
-		ObjectMapper mapper = new XmlMapper();
+		XmlMapper mapper = new XmlMapper();
 		mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 		
 		//rewrite the file with the new account added.
@@ -440,7 +439,7 @@ public class AccountHandling {
 		
 		//Read the file into an array list.
 		try {
-			ObjectMapper mapper = new XmlMapper(); 
+			XmlMapper mapper = new XmlMapper(); 
 			TypeReference<ArrayList<Customer>> typeRef = new TypeReference<ArrayList<Customer>>() {};
 			ArrayList<Customer> accounts = mapper.readValue(Files.newInputStream(p), typeRef);
 			return accounts;
