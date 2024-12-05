@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/20" xmlns:fx="http://javafx.com/fxml/1" spacing="10" padding="10"
+      fx:controller="UserInterface.MedicationSearchController">
+    <Label text="Medication Search" style="-fx-font-size: 20px;"/>
+    <HBox spacing="10">
+        <TextField fx:id="searchField" promptText="Search by name"/>
+        <ComboBox fx:id="categoryComboBox" promptText="Select category"/>
+        <ComboBox fx:id="supplierComboBox" promptText="Select supplier"/>
+        <CheckBox fx:id="inStockCheckBox" text="In Stock Only"/>
+        <Button text="Search" onAction="#handleSearch"/>
+        <Button text="Clear" onAction="#handleClear"/>
+    </HBox>
+    <TableView fx:id="resultsTable" prefWidth="600" prefHeight="300">
+        <columns>
+            <TableColumn text="Name" fx:id="nameColumn"/>
+            <TableColumn text="Category" fx:id="categoryColumn"/>
+            <TableColumn text="Supplier" fx:id="supplierColumn"/>
+            <TableColumn text="Stock" fx:id="stockColumn"/>
+        </columns>
+    </TableView>
+</VBox>

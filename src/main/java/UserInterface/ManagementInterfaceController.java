@@ -1,10 +1,10 @@
 package UserInterface;
 
-import javafx.fxml.FXML;
-import javafx.scene.control.*;
-import javafx.event.ActionEvent;
 import BackEnd.Role;
-import UserInterface.Session;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.TabPane;
 
 public class ManagementInterfaceController {
 

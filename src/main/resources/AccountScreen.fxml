@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="UserInterface.AccountScreenController">
+    <!-- Header -->
+    <top>
+        <HBox alignment="CENTER" spacing="10" style="-fx-background-color: #3a7fbf; -fx-padding: 10;">
+            <Label text="Account Management" style="-fx-font-size: 24px; -fx-text-fill: white;" />
+        </HBox>
+    </top>
+
+    <!-- Main Content -->
+    <center>
+        <VBox alignment="TOP_CENTER" spacing="20" style="-fx-padding: 20;">
+            <GridPane hgap="10" vgap="10">
+                <!-- Username (non-editable) -->
+                <Label text="Username:" />
+                <TextField fx:id="usernameField" editable="false" />
+                
+                <!-- Current Password -->
+                <Label text="Current Password:" />
+                <PasswordField fx:id="currentPasswordField" />
+                
+                <!-- New Password -->
+                <Label text="New Password:" />
+                <PasswordField fx:id="newPasswordField" />
+                
+                <!-- Contact Information -->
+                <Label text="Contact Information:" />
+                <TextField fx:id="contactField" />
+            </GridPane>
+
+            <!-- Action Buttons -->
+            <HBox spacing="10">
+                <Button text="Update Account" onAction="#handleUpdateAccount" />
+                <Button text="Cancel" onAction="#handleCancel" />
+            </HBox>
+        </VBox>
+    </center>
+</BorderPane>

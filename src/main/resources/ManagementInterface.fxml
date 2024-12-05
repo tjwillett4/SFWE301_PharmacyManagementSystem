@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="UserInterface.ManagementInterfaceController">
+
+    <!-- Top Section -->
+    <top>
+        <Label text="Management Interface" style="-fx-font-size: 18px; -fx-padding: 10px;" alignment="CENTER"/>
+    </top>
+
+    <!-- Center Section with Tabs -->
+    <center>
+        <TabPane fx:id="managementTabPane" style="-fx-padding: 20;"/>
+    </center>
+
+    <!-- Bottom Section with Logout/Exit Buttons -->
+    <bottom>
+        <HBox spacing="20" alignment="CENTER" style="-fx-padding: 10;">
+            <Button text="Logout" onAction="#handleLogout" prefWidth="100" prefHeight="40"/>
+            <Button text="Exit" onAction="#handleExit" prefWidth="100" prefHeight="40"/>
+        </HBox>
+    </bottom>
+</BorderPane>

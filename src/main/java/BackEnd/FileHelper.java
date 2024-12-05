@@ -17,21 +17,17 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
-import InventoryControl.BatchMedication;
-import InventoryControl.PharmacyInventory;
-import Prescriptions.Medication;
-
-import java.util.ArrayList;
-import java.util.stream.Collectors;
-
-import javafx.scene.control.Alert;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
+import InventoryControl.BatchMedication;
+import Prescriptions.Medication;
 
 public class FileHelper {
 	public final static String DATA_DIR = System.getenv("APPDATA") + "//pharmacy";

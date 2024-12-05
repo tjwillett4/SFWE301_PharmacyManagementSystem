@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/20" xmlns:fx="http://javafx.com/fxml/1" spacing="10" padding="10"
+      fx:controller="UserInterface.PrescriptionTrackingController">
+    <Label text="Prescription Status Tracking" style="-fx-font-size: 20px;"/>
+    <TableView fx:id="prescriptionTable" prefWidth="600" prefHeight="300">
+        <columns>
+            <TableColumn text="Prescription ID" fx:id="idColumn"/>
+            <TableColumn text="Patient Name" fx:id="patientNameColumn"/>
+            <TableColumn text="Medication Name" fx:id="medicationNameColumn"/>
+            <TableColumn text="Status" fx:id="statusColumn"/>
+        </columns>
+    </TableView>
+    <HBox spacing="10">
+        <Button text="Update Status" onAction="#handleUpdateStatus"/>
+        <Button text="Filter by Status" onAction="#handleFilterStatus"/>
+    </HBox>
+</VBox>
