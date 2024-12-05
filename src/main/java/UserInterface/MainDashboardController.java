@@ -167,7 +167,44 @@ public class MainDashboardController {
         }
     }
     
+    @FXML
+    private void handleDeleteAccount(ActionEvent event) {
+        // Prompt the manager to enter the username of the account to delete
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Delete Account");
+        dialog.setHeaderText("Delete Employee Account");
+        dialog.setContentText("Enter the username of the account to delete:");
 
+        // Handle the input from the dialog
+        Optional<String> result = dialog.showAndWait();
+        result.ifPresent(username -> {
+            try {
+                // Check if the account exists
+                Employee emp = AccountHandling.getEmployeeByUsername(username);
+                if (emp == null) {
+                    showErrorAlert("Error", "No account found for username: " + username);
+                    return;
+                }
+
+                // Confirm deletion
+                Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION);
+                confirmationAlert.setTitle("Confirm Deletion");
+                confirmationAlert.setHeaderText("Are you sure?");
+                confirmationAlert.setContentText("Do you really want to delete the account for username: " + username + "?");
+
+                Optional<ButtonType> confirmation = confirmationAlert.showAndWait();
+                if (confirmation.isPresent() && confirmation.get() == ButtonType.OK) {
+                    // Perform the deletion
+                    AccountHandling.deleteEmployeeAccount(username);
+                    showInfoAlert("Success", "Account for username: " + username + " deleted successfully.");
+                }
+            } catch (Exception e) {
+                // Log the exception and show an error alert
+                e.printStackTrace();
+                showErrorAlert("Error", "Failed to delete account: " + e.getMessage());
+            }
+        });
+    }
 
     @FXML
     private void handleLogout(ActionEvent event) {

@@ -39,6 +39,7 @@
                     <VBox alignment="TOP_LEFT" spacing="10" style="-fx-padding: 10;">
                         <Label style="-fx-font-size: 20px;" text="Manager Actions" />
                         <Button fx:id="addEmployee" onAction="#handleAddEmployee" style="-fx-font-size: 18px; -fx-pref-width: 200px; -fx-pref-height: 50px;" text="Add Employee" />
+                        <Button text="Delete Account" onAction="#handleDeleteAccount" />
                         <Button fx:id="unlockAccount" onAction="#handleUnlockAccount" style="-fx-font-size: 18px; -fx-pref-width: 200px; -fx-pref-height: 50px;" text="Unlock Account" />
                         <Button fx:id="reportsTab" onAction="#handleGenerateReports" style="-fx-font-size: 18px; -fx-pref-width: 200px; -fx-pref-height: 50px;" text="Generate Reports" />
                         <Button fx:id="inventoryTab" onAction="#handleUpdateInventory" style="-fx-font-size: 18px; -fx-pref-width: 200px; -fx-pref-height: 50px;" text="Update Inventory" />

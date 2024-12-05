@@ -1,11 +1,15 @@
 package UserInterface;
 
+import BackEnd.AccountHandling;
 import BackEnd.Employee;
 import BackEnd.Role;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TabPane;
+import java.util.Optional;
+import javafx.scene.control.TextInputDialog;
 
 public class ManagementInterfaceController {
 
@@ -29,6 +33,43 @@ public class ManagementInterfaceController {
     private void handleLogout(ActionEvent event) {
         Session.clear();
         NavigationUtil.loadLoginScreen(event);
+    }
+    
+    @FXML
+    private void handleDeleteAccount(ActionEvent event) {
+        // Show a dialog to get the username of the account to be deleted
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Delete Account");
+        dialog.setHeaderText("Delete Employee Account");
+        dialog.setContentText("Enter the username of the account to delete:");
+
+        Optional<String> result = dialog.showAndWait();
+        result.ifPresent(username -> {
+            try {
+                // Check if the account exists
+                Employee emp = AccountHandling.getEmployeeByUsername(username);
+                if (emp == null) {
+                    showAlert(Alert.AlertType.ERROR, "Error", "No account found for username: " + username);
+                    return;
+                }
+
+                // Confirm deletion
+                Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION);
+                confirmationAlert.setTitle("Confirm Deletion");
+                confirmationAlert.setHeaderText(null);
+                confirmationAlert.setContentText("Are you sure you want to delete the account for username: " + username + "?");
+                Optional<ButtonType> confirmation = confirmationAlert.showAndWait();
+
+                if (confirmation.isPresent() && confirmation.get() == ButtonType.OK) {
+                    // Perform the deletion
+                    AccountHandling.deleteEmployeeAccount(username);
+                    showAlert(Alert.AlertType.INFORMATION, "Success", "Account for username: " + username + " deleted successfully.");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                showAlert(Alert.AlertType.ERROR, "Error", "Failed to delete account: " + e.getMessage());
+            }
+        });
     }
 
     @FXML

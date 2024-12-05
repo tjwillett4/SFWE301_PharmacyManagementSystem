@@ -1,6 +1,7 @@
 package BackEnd;
 
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.InaccessibleObjectException;
 import java.nio.file.Files;
@@ -27,6 +28,9 @@ public class AccountHandling {
     public static int getLockoutCount() {
         return LOCKOUT_COUNT;
     }
+    
+    private static List<Employee> employeeList = new ArrayList<>(); 
+
 
 	//Role requirement check. Takes in the empoyee attempting and a list of roles ["manager", "pharamacist"]
 	//TODO: Should this require password?
@@ -79,6 +83,31 @@ public class AccountHandling {
 	        }
 	    }
 	}
+	
+	public static void deleteEmployeeAccount(String username) throws Exception {
+	    // Locate the account in your storage (database, file, etc.)
+	    Employee emp = getEmployeeByUsername(username);
+	    if (emp == null) {
+	        throw new Exception("Account not found for username: " + username);
+	    }
+
+	    // Remove the account from storage
+	    employeeList.remove(emp); // Assuming employeeList is your storage list
+
+	    // Save changes to persistent storage
+	    saveEmployeeData(); // Save the updated list to a file or database
+	}
+	
+	public static void saveEmployeeData() {
+        try (FileWriter writer = new FileWriter("employees.txt")) {
+            for (Employee employee : employeeList) {
+                writer.write(employee.toString() + "\n"); // Ensure Employee has a meaningful toString() method
+            }
+            System.out.println("Employee data saved successfully.");
+        } catch (IOException e) {
+            System.err.println("Error saving employee data: " + e.getMessage());
+        }
+    }
 
     /**
      * Handles user login with a simplified check.
