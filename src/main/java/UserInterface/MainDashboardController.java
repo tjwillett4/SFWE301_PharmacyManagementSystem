@@ -24,23 +24,106 @@ import java.util.Optional;
 public class MainDashboardController {
 
     @FXML private TabPane managementTabPane;
-    //@FXML private Tab inventoryTab;
-    //@FXML private Tab reportsTab;
+
+
+    @FXML private Button processSale;
+    @FXML private Button refillPrescription;
+    @FXML private Button createPrescription;
+    @FXML private Button viewInventory;
+    @FXML private Button searchMedications;
+    @FXML private Button addEmployee;
+    @FXML private Button unlockAccount;
+    @FXML private Button reportsTab;
+    @FXML private Button inventoryTab;
+
 
     @FXML
     private void initialize() {
         // Restrict access to management features based on role
         checkAuthorization();
     }
+    /*
+     * 	Customer,
+	Cashier,
+	pharmacyTech,
+	pharmacist,
+	pharmacyManager,
+	doctor
+     */
 
+    //Show or hide UI based on the permissions of the user. 
     private void checkAuthorization() {
         Role currentRole = Session.getCurrentUser().getAccountRole();
-        boolean hasManagementAccess = currentRole == Role.pharmacyManager || currentRole == Role.pharmacist;
 
-        // Disable management tabs for unauthorized users
-        if (!hasManagementAccess) {
-            //inventoryTab.setDisable(true);
-            //reportsTab.setDisable(true);
+        switch(currentRole) {
+	        case Customer:
+	        	//No permissions
+	            processSale.setDisable(true);
+	            refillPrescription.setDisable(true);
+	            createPrescription.setDisable(true);
+	            viewInventory.setDisable(true);
+	            searchMedications.setDisable(true);
+	            addEmployee.setDisable(true);
+	            unlockAccount.setDisable(true);
+	            reportsTab.setDisable(true);
+	            inventoryTab.setDisable(true);
+	        	break;
+	        case Cashier:
+	        	//Only sales permissions
+	            refillPrescription.setDisable(true);
+	            createPrescription.setDisable(true);
+	            viewInventory.setDisable(true);
+	            searchMedications.setDisable(true);
+	            addEmployee.setDisable(true);
+	            unlockAccount.setDisable(true);
+	            reportsTab.setDisable(true);
+	            inventoryTab.setDisable(true);
+	        	break;
+	        case pharmacyTech:
+	        	//Sale plus prescription/medication info. Cannot create prescriptions, only fulfill. 
+	            refillPrescription.setDisable(true);
+	            createPrescription.setDisable(true);
+	            addEmployee.setDisable(true);
+	            unlockAccount.setDisable(true);
+	            reportsTab.setDisable(true);
+	            inventoryTab.setDisable(true);
+	        	break;
+	        case pharmacist:
+	        	//Sale plus prescription/medication info. No management actions. 
+	            addEmployee.setDisable(true);
+	            unlockAccount.setDisable(true);
+	            reportsTab.setDisable(true);
+	            inventoryTab.setDisable(true);
+	        	break;
+	        case pharmacyManager:
+	        	//All permissions enabled. 
+	        	break;
+	        case doctor:
+	        	//Unknown permissions. Will disable all. 
+	        	//No permissions
+	            processSale.setDisable(true);
+	            refillPrescription.setDisable(true);
+	            createPrescription.setDisable(true);
+	            viewInventory.setDisable(true);
+	            searchMedications.setDisable(true);
+	            addEmployee.setDisable(true);
+	            unlockAccount.setDisable(true);
+	            reportsTab.setDisable(true);
+	            inventoryTab.setDisable(true);
+	        	break;
+        	default:
+            	//No permissions
+                processSale.setDisable(true);
+                refillPrescription.setDisable(true);
+                createPrescription.setDisable(true);
+                viewInventory.setDisable(true);
+                searchMedications.setDisable(true);
+                addEmployee.setDisable(true);
+                unlockAccount.setDisable(true);
+                reportsTab.setDisable(true);
+                inventoryTab.setDisable(true);
+                break;
+        		
         }
     }
 
@@ -355,6 +438,10 @@ public class MainDashboardController {
         showInfo("Processing Prescription", "Prescription is being processed.");
     }
 
+    @FXML void handlePrescriptionCreation(ActionEvent event) {
+    	//TODO: Create the prescriptions. 
+    }
+    
     @FXML
     private void handleRefillPrescription(ActionEvent event) {
         try {
