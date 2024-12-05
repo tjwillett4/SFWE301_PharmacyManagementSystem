@@ -34,6 +34,18 @@ public class NavigationUtil {
         }
     }
     
+    public static void loadMedicationScreen(ActionEvent event) {
+    	System.out.println("opening medication screen...");
+        try {
+            FXMLLoader loader = new FXMLLoader(NavigationUtil.class.getResource("/MedicationInventory.fxml"));
+            Scene scene = new Scene(loader.load());
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(scene);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
     public static void loadResetPasswordScreen(ActionEvent event) {
         try {
             FXMLLoader loader = new FXMLLoader(NavigationUtil.class.getResource("/ResetPassword.fxml"));

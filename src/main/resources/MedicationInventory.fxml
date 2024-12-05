@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.ScrollPane?>
+
+<BorderPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="UserInterface.MedicationInventory">
+    <!-- Header -->
+    <top>
+        <HBox alignment="CENTER" prefHeight="56.0" prefWidth="1019.0" spacing="10" style="-fx-background-color: #3a7fbf; -fx-padding: 10;">
+            <Label style="-fx-font-size: 32px; -fx-text-fill: white;" text="Pharmacy Inventory Management - Dashboard" />
+        </HBox>
+    </top>
+
+    <!-- Main Content -->
+    <center>
+        <HBox alignment="TOP_CENTER" spacing="20" style="-fx-padding: 20;">
+            <!-- Left Side -->
+            <VBox fx:id="newMedicationInfo" alignment="TOP_LEFT" spacing="20">
+            	<Label style="-fx-font-size: 24px;" text="Medication Info" />
+               <TextField fx:id="medicationName" prefWidth="200" promptText="Medication Name" />
+               <TextField fx:id="medicationCategory" prefWidth="200" promptText="Medication Category" />
+                <TextField fx:id="medicationBrandNames" prefWidth="200" promptText="Medication Brand Names, comma separated" />
+            </VBox>
+
+            <!-- Right Side -->
+            <VBox alignment="TOP_RIGHT" spacing="20">
+            	<Label style="-fx-font-size: 24px;" text="Medication Batch Info" />
+                <TextField fx:id="medicationSupplier" prefWidth="200" promptText="Medication Supplier" />
+                <TextField fx:id="medicationStock" prefWidth="200" promptText="Medication Pill Count" />
+                <TextField fx:id="medicationExpirationDate" prefWidth="200" promptText="Medication Expiration Date" />
+
+            </VBox>
+            
+            <!-- Right side again -->
+            <VBox fx:id="newMedicationDrugInteraction" alignment="BOTTOM_RIGHT" spacing="20">
+        	    <Label style="-fx-font-size: 24px;" text="Drug Interactions" />
+				<TextField fx:id="interactionDrugName" prefWidth="200" promptText="Interaction Drug Name, comma separated" />
+            </VBox>
+        </HBox>
+
+    </center>
+
+    <!-- Footer -->
+    <bottom>
+        <HBox alignment="CENTER" prefHeight="61.0" prefWidth="1017.0" spacing="20" style="-fx-background-color: #3a7fbf; -fx-padding: 10;">
+			<Button onAction="#handleMedicationSubmission" style="-fx-font-size: 18px; -fx-pref-width: 200px; -fx-pref-height: 50px;" text="Create/Add Medication" />
+        </HBox>
+    </bottom>
+</BorderPane>

@@ -40,6 +40,7 @@ public class MainDashboardController {
 	 @FXML private Button unlockAccount;
 	 @FXML private Button reportsTab;
 	 @FXML private Button inventoryTab;
+	 @FXML private Button resetEmployeePassword;
 
 	 // Prescription Table
 	 @FXML private TableView<Prescription> prescriptionTable;
@@ -58,32 +59,16 @@ public class MainDashboardController {
 	 private ObservableList<Customer> customerData;
 
 
-<<<<<<< HEAD
 	 @FXML
 	 private void initialize() {
 	     checkAuthorization();
 	     initializePrescriptionTracking();
 	     loadCustomerData();
 	 }
-=======
-    @FXML private Button processSale;
-    @FXML private Button refillPrescription;
-    @FXML private Button createPrescription;
-    @FXML private Button viewInventory;
-    @FXML private Button searchMedications;
-    @FXML private Button addEmployee;
-    @FXML private Button unlockAccount;
-    @FXML private Button reportsTab;
-    @FXML private Button inventoryTab;
-    @FXML private Button resetEmployeePassword;
+
+    
 
 
-    @FXML
-    private void initialize() {
-        // Restrict access to management features based on role
-        checkAuthorization();
-    }
->>>>>>> 85d3bbe92756db77b4e5fe87f86c460dfa52c7b1
     /*
      * 	Customer,
 	Cashier,
@@ -567,6 +552,9 @@ public class MainDashboardController {
     
     @FXML
     private void handleUpdateInventory(ActionEvent event) {
+    	
+    	NavigationUtil.loadMedicationScreen(event);
+    	/*
         try {
             TextInputDialog dialog = new TextInputDialog();
             dialog.setTitle("Update Inventory");
@@ -594,6 +582,7 @@ public class MainDashboardController {
         } catch (Exception e) {
             showErrorAlert("Error Updating Inventory", e.getMessage());
         }
+        */
     }
 
     @FXML

@@ -19,7 +19,6 @@
     </top>
 
     <!-- Main Content -->
-<<<<<<< HEAD
     <center>
         <HBox alignment="TOP_CENTER" spacing="20" style="-fx-padding: 20;">
             <!-- Left Side -->
@@ -29,7 +28,7 @@
                     <VBox alignment="TOP_LEFT" spacing="10" style="-fx-padding: 10;">
                         <Button fx:id="processSale" onAction="#handleProcessSale" style="-fx-font-size: 18px; -fx-pref-width: 200px; -fx-pref-height: 50px;" text="Process Sale" />
                         <Button fx:id="refillPrescription" onAction="#handleRefillPrescription" style="-fx-font-size: 18px; -fx-pref-width: 200px; -fx-pref-height: 50px;" text="Refill Prescription" />
-                        <Button fx:id="inventoryTab" onAction="#handleViewInventory" style="-fx-font-size: 18px; -fx-pref-width: 200px; -fx-pref-height: 50px;" text="View Inventory" />
+                        <Button fx:id="viewInventory" onAction="#handleViewInventory" style="-fx-font-size: 18px; -fx-pref-width: 200px; -fx-pref-height: 50px;" text="View Inventory" />
                         <Button fx:id="searchMedications" onAction="#handleSearchMedications" style="-fx-font-size: 18px; -fx-pref-width: 200px; -fx-pref-height: 50px;" text="Search Medications" />
                         <Button fx:id="createPrescription" onAction="#handlePrescriptionCreation" style="-fx-font-size: 18px; -fx-pref-width: 200px; -fx-pref-height: 50px;" text="Create Prescription" />
                     </VBox>
@@ -89,50 +88,8 @@
                 </TitledPane>
             </VBox>
         </HBox>
-=======
 
-    <center>
-        <ScrollPane>
-        	<content>
-		        <VBox  alignment="TOP_CENTER" prefHeight="500.0" prefWidth="727.0" spacing="20" style="-fx-padding: 20;">
-		            <!-- General Actions Section -->
-		            <TitledPane expanded="true" text="General Actions">
-		                <VBox alignment="TOP_LEFT" spacing="10" style="-fx-padding: 10;">
-		                    <Button fx:id="processSale" onAction="#handleProcessSale" style="-fx-font-size: 18px; -fx-pref-width: 200px; -fx-pref-height: 50px;" text="Process Sale" />
-		                    <Button fx:id="refillPrescription" onAction="#handleRefillPrescription" style="-fx-font-size: 18px; -fx-pref-width: 200px; -fx-pref-height: 50px;" text="Refill Prescription" />
-		                    <Button fx:id="viewInventory" onAction="#handleViewInventory" style="-fx-font-size: 18px; -fx-pref-width: 200px; -fx-pref-height: 50px;" text="View Inventory" />
-		                    <Button fx:id="searchMedications" onAction="#handleSearchMedications" style="-fx-font-size: 18px; -fx-pref-width: 200px; -fx-pref-height: 50px;" text="Search Medications" />
-		                    <Button fx:id="createPrescription" onAction="#handlePrescriptionCreation" style="-fx-font-size: 18px; -fx-pref-width: 200px; -fx-pref-height: 50px;" text="Create Prescription" />
-		                </VBox>
-		            </TitledPane>
-		
-		            <!-- Manager Actions Section -->
-		            <TitledPane expanded="true" text="Management">
-		                <VBox alignment="TOP_LEFT" spacing="10" style="-fx-padding: 10;">
-		                    <Label style="-fx-font-size: 20px;" text="Manager Actions" />
-		                    <Button fx:id="addEmployee" onAction="#handleAddEmployee" style="-fx-font-size: 18px; -fx-pref-width: 200px; -fx-pref-height: 50px;" text="Add Employee" />
-		                    <Button fx:id="unlockAccount" onAction="#handleUnlockAccount" style="-fx-font-size: 18px; -fx-pref-width: 200px; -fx-pref-height: 50px;" text="Unlock Account" />
-		                    <Button fx:id="reportsTab" onAction="#handleGenerateReports" style="-fx-font-size: 18px; -fx-pref-width: 200px; -fx-pref-height: 50px;" text="Generate Reports" />
-		                    <Button fx:id="inventoryTab" onAction="#handleUpdateInventory" style="-fx-font-size: 18px; -fx-pref-width: 200px; -fx-pref-height: 50px;" text="Update Inventory" />
-		                	<Button fx:id="resetEmployeePassword" onAction="#handleEmployeePasswordReset" style="-fx-font-size: 18px; -fx-pref-width: 200px; -fx-pref-height: 50px;" text="Change Employee Password" />
-		                	
-		                </VBox>
-		            </TitledPane>
-		            
-		            <!--  Account Settings -->
-		            <TitledPane expanded="true" text="My Account">
-		                 <VBox alignment="TOP_CENTER" spacing="20" style="-fx-padding: 20;">
-		                    <Label text="Update Your Account Information" style="-fx-font-size: 18px;" />
-		                    <Button onAction="#handleUpdateAccount" text="Update Password" style="-fx-font-size: 16px; -fx-pref-width: 200px;" />
-		                    <Button onAction="#handleUpdateContactInfo" text="Update Contact Information" style="-fx-font-size: 16px; -fx-pref-width: 200px;" />
-		                </VBox>
-		            </TitledPane>
-		        </VBox>
-	        </content>
-		</ScrollPane>	
->>>>>>> 85d3bbe92756db77b4e5fe87f86c460dfa52c7b1
     </center>
-
 
     <!-- Footer -->
     <bottom>
