@@ -259,8 +259,7 @@ public class MainDashboardController {
     private void openInventoryManagement(ActionEvent event) {
         try {
             // Retrieve inventory
-            Path inventoryFile = FileHelper.findPharmacyInventoryFile();
-            ArrayList<Medication> inventoryList = PharmacyInventory.readPharmacyInventory(inventoryFile);
+            ArrayList<Medication> inventoryList = PharmacyInventory.readPharmacyInventory();
             ObservableList<Medication> observableInventory = FXCollections.observableArrayList(inventoryList);
 
             // Create TableView for Inventory Management
@@ -312,8 +311,7 @@ public class MainDashboardController {
     @FXML
     private void handleViewInventory(ActionEvent event) {
         try {
-            Path inventoryFile = FileHelper.findPharmacyInventoryFile();
-            ArrayList<Medication> inventoryList = PharmacyInventory.readPharmacyInventory(inventoryFile);
+            ArrayList<Medication> inventoryList = PharmacyInventory.readPharmacyInventory();
             ObservableList<Medication> observableInventory = FXCollections.observableArrayList(inventoryList);
 
             // Create TableView
@@ -705,8 +703,7 @@ public class MainDashboardController {
 
         searchDialog.showAndWait().ifPresent(searchQuery -> {
             try {
-                Path inventoryFile = FileHelper.findPharmacyInventoryFile();
-                ArrayList<Medication> inventoryList = PharmacyInventory.readPharmacyInventory(inventoryFile);
+                ArrayList<Medication> inventoryList = PharmacyInventory.readPharmacyInventory();
                 Medication result = inventoryList.stream()
                         .filter(med -> med.getName().equalsIgnoreCase(searchQuery))
                         .findFirst()
@@ -793,8 +790,7 @@ public class MainDashboardController {
             }
 
             // Step 3: Check inventory for the medication
-            Path inventoryFile = FileHelper.findPharmacyInventoryFile();
-            ArrayList<Medication> inventoryList = PharmacyInventory.readPharmacyInventory(inventoryFile);
+            ArrayList<Medication> inventoryList = PharmacyInventory.readPharmacyInventory();
 
             Medication medication = inventoryList.stream()
                     .filter(med -> med.getName().equalsIgnoreCase(medicationName.get()))

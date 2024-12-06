@@ -243,20 +243,6 @@ public class AccountHandling {
         }
         return false;
     }
- 
-    
- 
-	
-	public static void saveEmployeeData() {
-        try (FileWriter writer = new FileWriter("employees.txt")) {
-            for (Employee employee : employeeList) {
-                writer.write(employee.toString() + "\n"); // Ensure Employee has a meaningful toString() method
-            }
-            System.out.println("Employee data saved successfully.");
-        } catch (IOException e) {
-            System.err.println("Error saving employee data: " + e.getMessage());
-        }
-    }
 
     /**
      * Handles user login with a simplified check.
@@ -367,10 +353,7 @@ public class AccountHandling {
 		}
 		return false;
 	}
-	
-	
-	
-	
+
 	
 	//updates a user account based on username. Verification done in controller.
 	public static void changeEmployeeAccount(String username, Employee acc) throws Exception {
@@ -402,6 +385,21 @@ public class AccountHandling {
 	    AccountHandling.writeEmployee(accounts);
 	}
 	
+	
+	/*
+	 *  CUSTOMER EDITING
+	 */
+	 public static void removeCustomer(Customer customer) throws Exception {
+        Path customerFile = FileHelper.findCustomerFile();
+        ArrayList<Customer> customers = readCustomerStorage();
+
+        if (customers.removeIf(existingCustomer -> existingCustomer.getPhoneNum().equals(customer.getPhoneNum()))) {
+        	XmlMapper mapper = FileHelper.createWriteMapper();
+            mapper.writeValue(Files.newOutputStream(customerFile), customers);
+        } else {
+            throw new IOException("Customer not found in storage.");
+	    }
+	}
 	
 	
 	
@@ -464,7 +462,7 @@ public class AccountHandling {
 		mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 		
 		//Get the current list of accounts and add the new one to it.
-		ArrayList<Customer> accounts =  readCustomerStorage(p);
+		ArrayList<Customer> accounts =  readCustomerStorage();
 		accounts.add(encryptedAccount);
 		
 		//rewrite the file with the new account added.
@@ -501,7 +499,8 @@ public class AccountHandling {
 	}
 	
 	//retrieves all the Account's stored in storage. 
-	public static ArrayList<Customer> readCustomerStorage(Path p) throws Exception{
+	public static ArrayList<Customer> readCustomerStorage() throws Exception{
+		Path p = FileHelper.findCustomerFile();
 		//Check that the file exists. 
 		if(!Files.exists(p))
 			throw new Exception("Cannot load settings because the settings file path could not be loaded.");
@@ -537,6 +536,10 @@ public class AccountHandling {
 		}
 	}
 	
+	
+	/*
+	 * CUSTOMER FILE HANDLING
+	 */
 	public static void updateCustomerData(ObservableList<Customer> customers) throws Exception {
 	    Path customerFile = FileHelper.findCustomerFile();
 	    XmlMapper mapper = new XmlMapper();

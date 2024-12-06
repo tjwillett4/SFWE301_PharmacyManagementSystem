@@ -1,5 +1,6 @@
 package UserInterface;
 
+import BackEnd.AccountHandling;
 import BackEnd.Customer;
 import BackEnd.FileHelper;
 import javafx.beans.property.SimpleStringProperty;
@@ -39,7 +40,7 @@ public class CustomerManagementController {
     }
 
     private void loadCustomers() throws Exception {
-        customerList.setAll(FileHelper.getAllCustomers());
+        customerList.setAll(AccountHandling.readCustomerStorage());
     }
 
     @FXML
@@ -64,7 +65,7 @@ public class CustomerManagementController {
         Customer selected = customerTable.getSelectionModel().getSelectedItem();
         if (selected != null) {
             try {
-                FileHelper.removeCustomer(selected);
+                AccountHandling.removeCustomer(selected);
                 customerList.remove(selected);
             } catch (Exception e) {
                 showAlert(Alert.AlertType.ERROR, "Error", "Failed to remove customer: " + e.getMessage());
