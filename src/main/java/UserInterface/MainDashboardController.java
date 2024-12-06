@@ -827,11 +827,11 @@ public class MainDashboardController {
             TextInputDialog NameDialog = new TextInputDialog();
             NameDialog.setTitle("Add Customer");
             NameDialog.setHeaderText("Enter Customer First Name:");
-            NameDialog.setContentText("First Name:");
+            NameDialog.setContentText("Name:");
             Optional<String> NameResult = NameDialog.showAndWait();
 
             if (!NameResult.isPresent() || NameResult.get().trim().isEmpty()) {
-                showError("Error", "Customer First Name is required.");
+                showError("Error", "Customer Name is required.");
                 return;
             }
 
@@ -931,7 +931,7 @@ public class MainDashboardController {
 
         Optional<String> newName = NameDialog.showAndWait();
         if (!newName.isPresent() || newName.get().trim().isEmpty()) {
-            showErrorAlert("Error", "First name cannot be empty.");
+            showErrorAlert("Error", "Name cannot be empty.");
             return;
         }
         
@@ -958,7 +958,7 @@ public class MainDashboardController {
         }
 
         // Update the customer object
-        selectedCustomer.setFirstName(newName.get());
+        selectedCustomer.setName(newName.get());
         selectedCustomer.setEmail(newEmail.get());
         selectedCustomer.setPhoneNum(newPhone.get());
         // Save updated data
