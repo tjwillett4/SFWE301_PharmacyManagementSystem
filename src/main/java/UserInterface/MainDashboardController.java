@@ -725,6 +725,8 @@ public class MainDashboardController {
     
     @FXML
     private void handleUpdateInventory(ActionEvent event) {
+    	NavigationUtil.loadMedicationScreen(event);
+    	/*
         try {
             TextInputDialog dialog = new TextInputDialog();
             dialog.setTitle("Update Inventory");
@@ -751,7 +753,7 @@ public class MainDashboardController {
             }
         } catch (Exception e) {
             showErrorAlert("Error Updating Inventory", e.getMessage());
-        }
+        }*/
     }
 
     @FXML

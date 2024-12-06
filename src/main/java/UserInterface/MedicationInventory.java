@@ -33,6 +33,11 @@ public class MedicationInventory {
 	        Optional<String> result = dialog.showAndWait();
 	        result.ifPresent(medName -> {
 	            try {
+	            	if (!result.isPresent() || result.isEmpty() || medName.length() == 0) {
+	            		//if canceled return
+	            		NavigationUtil.loadMainDashboard();
+	            		return;
+	            	}
 	            	currentMedication = PharmacyInventory.retrieveMedication(medName);
 	         
 
@@ -77,17 +82,20 @@ public class MedicationInventory {
 		 int stock = Integer.parseInt(medicationStock.getText());
 		 ArrayList<String> brands = new ArrayList<>(Arrays.asList(medicationBrandNames.getText().split("\\s*,\\s*")));
 		 String supplier = medicationSupplier.getText();
-		 String expirationDateAsString = medicationExpirationDate.getText();
+		 String[] expirationDateAsStringList = medicationExpirationDate.getText().split("/");
 		 ArrayList<String> interactionDrugName = new ArrayList<>(Arrays.asList(medicationBrandNames.getText().split("\\s*,\\s*")));
 		 
 		 Medication med;
 		 
 		 
 		//create a shipment batch
+		 int month = Integer.parseInt(expirationDateAsStringList[0]);
+		 int day = Integer.parseInt(expirationDateAsStringList[1]);
+		 int year = Integer.parseInt(expirationDateAsStringList[2]);
 		 BatchMedication b = new BatchMedication(
 				 name,	// Name. 
 				 stock, // Stock count
-				 LocalDate.of(2024, 12, 25) //TODO: Fix expiration date! 
+				 LocalDate.of(year, month, day) //TODO: Fix expiration date! 
 				 );
 
 		 
@@ -100,30 +108,26 @@ public class MedicationInventory {
 					 supplier,
 					 stock
 					 );
-			 
 			 med.setBrandNames(brands);
 			 med.addSingleBatch(b);
 			 
 			 //Drug interactions
 			 ArrayList<DrugInteraction> DI = new ArrayList<DrugInteraction>();
-			 
 			 for (String i : interactionDrugName) {
 				 DI.add( new DrugInteraction(i, Arrays.asList("")));
 			 }
 			 med.setInteractions(DI);
-
 			 
 	        //Write medication to storage
 	        try {
 				PharmacyInventory.addMedication(med);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
+				showError("Error","There has been an issue accessing Pharmacy Inventory: " + e);
 				System.out.println("Unable to add medication because: " + e);
 			}
-				 
-			 
 		 }
+		 //If medication already exists.
 		 else {
 			 try {
 				med = currentMedication;
@@ -131,19 +135,15 @@ public class MedicationInventory {
 				if (med == null) {
 					showError("Error", "The medication " + name + " cannot be found in the inventory. even though it should.");
 				}
-					
-				
 				med.addSingleBatch(b);
 				PharmacyInventory.updateMedication(med);	
 			} catch (Exception e) {
-				// TODO: throw prompt for user. 
+				showError("Error","There has been an issue accessing Pharmacy Inventory: " + e);
 				e.printStackTrace();
-				return;
 			}
 		 }
 		 
-		 
-		  
+		 NavigationUtil.loadMainDashboard();  
 	 }
 	 
 	 
