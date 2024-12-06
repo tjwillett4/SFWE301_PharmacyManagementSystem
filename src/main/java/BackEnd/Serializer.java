@@ -1,6 +1,9 @@
 package BackEnd;
 
-/*
+/* This encryption model worked in JDK 6, upon updating the system to JDK 8 for JavaFX
+ * encryption stopped working. We have accepted this as a compromise and dedicated our time elsewhere. 
+ * 
+ * 
  * The system shall use an encryption model to protect sensitive information 
  * such as account passwords in databases. 
  */
@@ -70,12 +73,14 @@ public class Serializer {
 	/* ACCOUNT_INFO HANDLING 
 	 */
 	public static Employee encryptEmployee(Employee emp) throws Exception {
-	    String password = emp.getSecCodePass();
+	    String secCode = emp.getSecCodePass();
+	    String pass = emp.getPassword();
 	    StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
-	    encryptor.setPassword(password); // Use secCodePass for encryption
+	    encryptor.setPassword(secCode); // Use secCodePass for encryption
 
 	    // Encrypt fields
 	    emp.setPassword(encryptor.encrypt(emp.getPassword())); // Encrypt password
+	    emp.setSecCodePass(encryptString(secCode, pass));
 	    return emp;
 	}
 
@@ -195,6 +200,7 @@ public class Serializer {
 		if (toDecrypt == null || password == null)
 			return null;
 		StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
+		
 		encryptor.setPassword(password);                         // we HAVE TO set a password
 		
 		return encryptor.decrypt(toDecrypt);

@@ -10,6 +10,7 @@ public class Employee extends Account {
     private String contactInfo = "";
     private Role accountRole;
     private int loginAttempts = 0;
+    private String secCodePass = "";
 
     // Default constructor
     public Employee() {
@@ -18,20 +19,19 @@ public class Employee extends Account {
     public Employee(String username) {
     	this.username = username;
     }
-
-    // Constructor with required fields
-    /*public Employee(String username, String password, String accountRole) {
-        this.username = username;
-        this.password = password;
-        this.accountRole = accountRole;
-        this.loginAttempts = 0; // Initialize login attempts to 0
-    }*/
+    
     // Constructor with required fields
     public Employee(String username, String password, Role accountRole) {
         this.username = username;
         this.password = password;
         this.accountRole = accountRole;
         this.loginAttempts = 0; // Initialize login attempts to 0
+        try {
+			this.secCodePass = Serializer.generateSerializerString();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} //String used for password encryption. 
     }
     
     @Override
@@ -93,8 +93,8 @@ public class Employee extends Account {
         this.loginAttempts = loginAttempts;
     }
 
-	public void setSecCodePass(String password2) {
-		// TODO Auto-generated method stub
+	public void setSecCodePass(String secCodePass) {
+		this.secCodePass = secCodePass;
 		
 	}
 	
@@ -107,7 +107,6 @@ public class Employee extends Account {
 	}
 
 	public String getSecCodePass() {
-		// TODO Auto-generated method stub
-		return null;
+		return secCodePass;
 	}
 }
