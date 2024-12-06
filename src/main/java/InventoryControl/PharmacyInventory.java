@@ -31,7 +31,7 @@ public class PharmacyInventory {
      * RETRIEVE MEDICATION 
      */
     public static Medication retrieveMedication(String name) throws Exception {
-        ArrayList<Medication> medList = readPharmacyInventory(FileHelper.findPharmacyInventoryFile());
+        ArrayList<Medication> medList = readPharmacyInventory();
         for (Medication med : medList) {
             if (med.getName().equals(name)) {
                 return med;
@@ -43,8 +43,8 @@ public class PharmacyInventory {
     /* 
      * UPDATE INVENTORY 
      */
-    public static void updateStock(String medicationName, int stockToAdd, Path inventoryFile) throws Exception {
-        ArrayList<Medication> medications = readPharmacyInventory(inventoryFile);
+    public static void updateStock(String medicationName, int stockToAdd) throws Exception {
+        ArrayList<Medication> medications = readPharmacyInventory();
 
         boolean medicationFound = false;
         for (Medication med : medications) {
@@ -67,7 +67,7 @@ public class PharmacyInventory {
      * MODIFY EXISTING MEDICATION
      */
     public static void updateMedication(Medication med) throws Exception {
-        ArrayList<Medication> medList = readPharmacyInventory(FileHelper.findPharmacyInventoryFile());
+        ArrayList<Medication> medList = readPharmacyInventory();
 
         for (Medication m : medList) {
             if (m.getName().equals(med.getName())) {
@@ -88,7 +88,7 @@ public class PharmacyInventory {
         mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 
-        ArrayList<Medication> medications = readPharmacyInventory(p);
+        ArrayList<Medication> medications = readPharmacyInventory();
         medications.add(med);
 
         mapper.writeValue(Files.newOutputStream(p), medications);
@@ -104,7 +104,8 @@ public class PharmacyInventory {
         mapper.writeValue(Files.newOutputStream(p), medications);
     }
 
-    public static ArrayList<Medication> readPharmacyInventory(Path p) throws Exception {
+    public static ArrayList<Medication> readPharmacyInventory() throws Exception {
+    	Path p = FileHelper.findPharmacyInventoryFile();
         if (!Files.exists(p)) {
             throw new Exception("Cannot load settings because the settings file path could not be loaded.");
         }

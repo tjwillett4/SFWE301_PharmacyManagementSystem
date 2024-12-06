@@ -3,11 +3,8 @@ package UserInterface;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
-import BackEnd.AccountHandling;
-import BackEnd.Employee;
 import InventoryControl.BatchMedication;
 import InventoryControl.PharmacyInventory;
 import Prescriptions.DrugInteraction;
@@ -15,14 +12,34 @@ import Prescriptions.Medication;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.VBox;
 
-
+/*
+ * File used for Medication inventory GUI. Parsing user input into the inventory. 
+ */
 public class MedicationInventory {
-	 @FXML
+	//Variables
+	 private Boolean existingMedication = false;
+	 Medication currentMedication = null;
+	
+	//FXML GUI components
+	 @FXML private VBox newMedicationDrugInteraction;
+	 @FXML private VBox newMedicationInfo;
+	 
+	 @FXML private TextField medicationName;
+	 @FXML private TextField medicationCategory;
+	 @FXML private TextField medicationStock;
+	 @FXML private TextField medicationBrandNames;
+	 @FXML private TextField medicationSupplier;
+	 @FXML private TextField medicationExpirationDate;
+	 @FXML private TextField interactionDrugName;
+	
+	
+	//Initialize the medication homescreen.  
+	@FXML
 	 private void initialize() {
 		 //see if this is a new medication:
 		 TextInputDialog dialog = new TextInputDialog();
@@ -35,7 +52,6 @@ public class MedicationInventory {
 	            try {
 	            	if (!result.isPresent() || result.isEmpty() || medName.length() == 0) {
 	            		//if canceled return
-	            		NavigationUtil.loadMainDashboard();
 	            		return;
 	            	}
 	            	currentMedication = PharmacyInventory.retrieveMedication(medName);
@@ -47,12 +63,9 @@ public class MedicationInventory {
 	                e.printStackTrace();
 	            }
 	        });
-		 
-		 
-
 	 }
 	 
-	 
+	 //Initialize the medication
 	 private void initializeMedicationUI(Boolean existingMedication) {
 		 if (existingMedication) {
 			 newMedicationDrugInteraction.setVisible(false);
@@ -60,23 +73,10 @@ public class MedicationInventory {
 		 }
 	 }
 	 
-	 @FXML private VBox newMedicationDrugInteraction;
-	 @FXML private VBox newMedicationInfo;
-	 
-	 @FXML private TextField medicationName;
-	 @FXML private TextField medicationCategory;
-	 @FXML private TextField medicationStock;
-	 @FXML private TextField medicationBrandNames;
-	 @FXML private TextField medicationSupplier;
-	 @FXML private TextField medicationExpirationDate;
-	 @FXML private TextField interactionDrugName;
-	 
-	 private Boolean existingMedication = false;
-	 Medication currentMedication = null;
-	 
+	 //Upon submission of the new medication form. 
 	 @FXML
 	 private void handleMedicationSubmission(ActionEvent event) {
-		 System.out.println("Handle medication submission!");
+		 //Get text from all the fields. 
 		 String name = medicationName.getText();
 		 String cat = medicationCategory.getText();
 		 int stock = Integer.parseInt(medicationStock.getText());
@@ -102,6 +102,7 @@ public class MedicationInventory {
 		 
 		 //if new med. 
 		 if (currentMedication == null) {
+			 //create new medication and set it's batch and brands. 
 			 med = new Medication(
 					 name,
 					 cat,
@@ -146,80 +147,12 @@ public class MedicationInventory {
 		 NavigationUtil.loadMainDashboard();  
 	 }
 	 
-	 
-	    private void showError(String title, String message) {
-	        Alert alert = new Alert(AlertType.ERROR);
-	        alert.setTitle(title);
-	        alert.setHeaderText(null);
-	        alert.setContentText(message);
-	        alert.showAndWait();
-	    }
-	 
-	 
-	 /*
-	  *         //INITIAL MEDICATION TESTING:
-        Medication med = new Medication(
-        	    "Omeprazole",     // Name
-        	    "Proton Pump Inhibitor", // Category
-        	    "Default Supplier",      // Supplier
-        	    0                        // Stock (initialize to zero if none)
-        	);
-        //Set alternative names
-        ArrayList<String> brandNames = new ArrayList<>(
-        		Arrays.asList("Prilosec OTC", "Prilosec", "Zegerid", "OmePPI", "Zegerid OTC")
-		);
-        med.setBrandNames(brandNames);
-        
-        //Create a shipment batch. 
-        BatchMedication batchOne = new BatchMedication(
-        	    "Omeprazole", // Medication name
-        	    300, // Stock count
-        	    LocalDate.of(2024, 12, 25) // Expiration date
-        	);
-        med.setSingleBatch(batchOne);
-        
-        //set drug interactions
-        med.setInteractions(new ArrayList<>(
-        			Arrays.asList(
-        				new DrugInteraction("Warfarin", Arrays.asList("Blood thinning", "Strengthened effect")),
-        				new DrugInteraction("Citalopram", Arrays.asList("heart rhythm issues"))
-					))
-        );
-        
-        
-        //Write medication to storage
-        try {
-			PharmacyInventory.addMedication(med);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			System.out.println("Unable to add medication because: " + e);
-		}
-        
-        
-
-        //get the medication from storage:
-        try {
-			Medication testMedication = PharmacyInventory.retrieveMedication("Omeprazole");
-			
-	        //change the stock count of the medicaiton. 
-			for (String s : Arrays.asList("joe", "Han", "tobby")) {
-				if (!testMedication.getBatches().get(0).updateStock(
-						testMedication.getBatches().get(0).getStock()-14, s))
-					System.out.println("Error! There is not enough medication left to fill this prescription.");
-				
-			}
-			PharmacyInventory.updateMedication(testMedication);
-
-			
-			System.out.println("medication info is: ");
-			testMedication.printMedicationInfo();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			System.out.println("Unable to get medication because: " + e);
-		}
-	  */
-	 
-	 
+	//GUI function to prompt the user of an issue. 
+	private void showError(String title, String message) {
+	    Alert alert = new Alert(AlertType.ERROR);
+	    alert.setTitle(title);
+	    alert.setHeaderText(null);
+	    alert.setContentText(message);
+	    alert.showAndWait();
+	} 
 }

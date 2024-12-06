@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -30,6 +29,8 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import InventoryControl.BatchMedication;
 import Prescriptions.Medication;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 
 public class FileHelper {
 	public final static String DATA_DIR = System.getenv("APPDATA") + "//pharmacy";
@@ -84,38 +85,6 @@ public class FileHelper {
 		return null;
 	}
 	
-	//GUI's used to prompt the user with information.
-	public static Boolean confirmationWindow(String message) {
-		int dialogResult = JOptionPane.showConfirmDialog(null, message);
-		return dialogResult == JOptionPane.YES_OPTION;
-	}
-	public static void errorMessage(String title, String message) {
-		JOptionPane.showMessageDialog(null,
-			    "Error: " + message,
-			    title,
-			    JOptionPane.ERROR_MESSAGE);
-	}
-	public static void infoMessage(String title, String message) {
-		JOptionPane.showMessageDialog(null,
-			    "Error: " + message,
-			    title,
-			    JOptionPane.INFORMATION_MESSAGE);
-	}
-
-	//Checks password against certain criteria to see if it meets requirements. 
-	public static Boolean passwordValid(String password) {
-		//check for password length
-		boolean validCheck = false;
-		if (password != null && password.length () >= 8) {
-			validCheck = true;
-		}
-		else {
-			infoMessage("Info", "Password must be at least 8 characters long");
-		}
-		
-		return validCheck;
-	}
-	
 	public static XmlMapper createReadMapper() {
 		XmlMapper mapper = new XmlMapper();
         mapper.registerModule(new JavaTimeModule());
@@ -147,6 +116,67 @@ public class FileHelper {
         }
     }
 
+    
+    public static ArrayList<Medication> getAllMedications() throws Exception {
+        Path medicationFile = findPharmacyInventoryFile();
+
+        if (!Files.exists(medicationFile) || medicationFile.toFile().length() == 0) {
+            return new ArrayList<>(); // Return an empty list if the file does not exist or is empty
+        }
+
+        XmlMapper mapper = createReadMapper();
+
+        try {
+            ArrayList<BatchMedication> batchMedications = mapper.readValue(
+                Files.newInputStream(medicationFile),
+                mapper.getTypeFactory().constructCollectionType(ArrayList.class, BatchMedication.class)
+            );
+
+            // Convert BatchMedication to Medication
+            return batchMedications.stream().map(batch -> {
+                Medication medication = new Medication();
+                medication.setName(batch.getMedicationName());
+                medication.setStock(batch.getStock());
+                ArrayList<BatchMedication> batches = new ArrayList<>();
+                batches.add(batch);
+                medication.setBatches(batches);
+                return medication;
+            }).collect(Collectors.toCollection(ArrayList::new));
+
+        } catch (IOException e) {
+            throw new IOException("Error reading medication storage file: " + e.getMessage(), e);
+        }
+    }
+    public static ArrayList<Medication> searchMedications(String keyword, String category, String supplier, boolean inStockOnly) throws Exception {
+        // Fetch all medications
+        ArrayList<Medication> allMedications = getAllMedications();
+
+        // Filter based on the provided criteria
+        ArrayList<Medication> filteredMedications = new ArrayList<>();
+        for (Medication medication : allMedications) {
+            boolean matchesKeyword = (keyword == null || keyword.isEmpty()) || medication.getName().toLowerCase().contains(keyword.toLowerCase());
+            boolean matchesCategory = (category == null || category.isEmpty()) || medication.getCategory().equalsIgnoreCase(category);
+            boolean matchesSupplier = (supplier == null || supplier.isEmpty()) || medication.getSupplier().equalsIgnoreCase(supplier);
+            boolean matchesStock = !inStockOnly || medication.getStock() > 0;
+
+            if (matchesKeyword && matchesCategory && matchesSupplier && matchesStock) {
+                filteredMedications.add(medication);
+            }
+        }
+        return filteredMedications;
+    }
+    
+    
+    public static void showError(String title, String message) {
+        Alert alert = new Alert(AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+    
+    
+    /*
     // Update an employee in the storage file
     public static void updateEmployee(Employee employee) throws IOException {
         Path employeeFile;
@@ -253,4 +283,5 @@ public class FileHelper {
             throw new IOException("Customer not found in storage.");
         }
     }
+*/
 }

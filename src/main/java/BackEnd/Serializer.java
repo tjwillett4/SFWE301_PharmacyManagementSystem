@@ -106,7 +106,7 @@ public class Serializer {
 		String name = (dotIndex == -1) ? "" : p.toFile().getName().substring(0, dotIndex);
 		String ext = (dotIndex == -1) ? "" : p.toFile().getName().substring(dotIndex + 1);
 		if (name.isEmpty() || ext.isEmpty()) {
-			FileHelper.errorMessage("Error", "Unable to retrieve file information " + p.getFileName() + ". ");
+			FileHelper.showError("Error", "Unable to retrieve file information " + p.getFileName() + ". ");
 			return;
 		}
 		
@@ -115,7 +115,7 @@ public class Serializer {
 		try {
 			data = Files.readAllBytes(p);
 		} catch (IOException e) {
-			FileHelper.errorMessage("Error", "Unable to open the selected file " + p.getFileName() + ". " + e);
+			FileHelper.showError("Error", "Unable to open the selected file " + p.getFileName() + ". " + e);
 			e.printStackTrace();
 			return;
 		}
@@ -125,7 +125,7 @@ public class Serializer {
 		try {
 			Files.write(Paths.get(outputFile), encryptor.encrypt(data));
 		} catch (Exception e) {
-			FileHelper.errorMessage("Error", "Unable to encrypt file. " + e);
+			FileHelper.showError("Error", "Unable to encrypt file. " + e);
 			e.printStackTrace();
 		} 
 		
@@ -133,7 +133,7 @@ public class Serializer {
 		if(deleteOld) {
 			try {Files.delete(p);}
 			catch (IOException e) {
-				FileHelper.errorMessage("Error", "Could not delete file \"" + p.getFileName() + "\"");
+				FileHelper.showError("Error", "Could not delete file \"" + p.getFileName() + "\"");
 			}
 		}
 		
@@ -152,7 +152,7 @@ public class Serializer {
 		String name = (dotIndex == -1) ? "" : p.toFile().getName().substring(0, dotIndex).replace("_serialized", "");
 		String ext = (dotIndex == -1) ? "" : p.toFile().getName().substring(dotIndex + 1);
 		if (name.isEmpty() || ext.isEmpty()) {
-			FileHelper.errorMessage("Error", "Unable to retrieve file information " + p.getFileName() + ". ");
+			FileHelper.showError("Error", "Unable to retrieve file information " + p.getFileName() + ". ");
 			return;
 		}
 		
@@ -161,7 +161,7 @@ public class Serializer {
 		try {
 			data = Files.readAllBytes(p);
 		} catch (IOException e) {
-			FileHelper.errorMessage("Error", "Unable to open the selected file " + p.getFileName() + ". " + e);
+			FileHelper.showError("Error", "Unable to open the selected file " + p.getFileName() + ". " + e);
 			e.printStackTrace();
 		}
 		
@@ -170,7 +170,7 @@ public class Serializer {
 		try {
 			Files.write(Paths.get(outputFile), encryptor.decrypt(data));
 		} catch (Exception e) {
-			FileHelper.errorMessage("Error", "Unable to decrypt file. " + e);
+			FileHelper.showError("Error", "Unable to decrypt file. " + e);
 			e.printStackTrace();
 		} 
 		
@@ -178,7 +178,7 @@ public class Serializer {
 		if(deleteOld) {
 			try {Files.delete(p);}
 			catch (IOException e) {
-				FileHelper.errorMessage("Error", "Could not delete file \"" + p.getFileName() + "\"");
+				FileHelper.showError("Error", "Could not delete file \"" + p.getFileName() + "\"");
 			}
 		}		
 	}
