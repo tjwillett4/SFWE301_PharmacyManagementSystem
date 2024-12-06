@@ -37,8 +37,11 @@ public class FileHelper {
 	public final static String ACCOUNT_STORAGE_FILE = "/CustomerStorage.xml";
 	public final static String EMPLOYEE_STORAGE_FILE = "/EmployeeStorage.xml";
 	public final static String PHARMACY_INVENTORY_FILE = "/PharmacyInventory.xml";
-	
-	
+	public final static String PRESCRIPTION_STORAGE_FILE = "/PrescriptionStorage.xml";
+
+	public static Path findPrescriptionFile() throws Exception {
+	    return findPropertiesFile(PRESCRIPTION_STORAGE_FILE);
+	}
 	//return of property/database files.
 	public static Path findPharmacyInventoryFile() throws Exception {
 		return findPropertiesFile(PHARMACY_INVENTORY_FILE);

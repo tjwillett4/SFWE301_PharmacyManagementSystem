@@ -7,6 +7,7 @@ import java.util.Optional;
 import BackEnd.AccountHandling;
 import BackEnd.Customer;
 import BackEnd.Employee;
+import BackEnd.PrescriptionHandling;
 import BackEnd.Role;
 import InventoryControl.PharmacyInventory;
 import Prescriptions.Medication;
@@ -629,8 +630,57 @@ public class MainDashboardController {
             }
         });
     }
+    
+    @FXML
+    private void handleCreatePrescription(ActionEvent event) {
+        try {
+            // Open dialog for creating a prescription
+            TextInputDialog customerDialog = new TextInputDialog();
+            customerDialog.setTitle("Create Prescription");
+            customerDialog.setHeaderText("Enter the customer's name:");
+            customerDialog.setContentText("Customer Name:");
 
- // Initialize the prescription table
+            Optional<String> customerNameOpt = customerDialog.showAndWait();
+            if (!customerNameOpt.isPresent() || customerNameOpt.get().trim().isEmpty()) {
+                showAlert("Customer name is required.", "Invalid Input", Alert.AlertType.WARNING);
+                return;
+            }
+
+            String customerName = customerNameOpt.get();
+
+            TextInputDialog medicationDialog = new TextInputDialog();
+            medicationDialog.setTitle("Create Prescription");
+            medicationDialog.setHeaderText("Enter the medication name:");
+            medicationDialog.setContentText("Medication:");
+
+            Optional<String> medicationOpt = medicationDialog.showAndWait();
+            if (!medicationOpt.isPresent() || medicationOpt.get().trim().isEmpty()) {
+                showAlert("Medication name is required.", "Invalid Input", Alert.AlertType.WARNING);
+                return;
+            }
+
+            String medication = medicationOpt.get();
+
+            // Add the prescription
+            Prescription newPrescription = new Prescription(
+                    PrescriptionHandling.generateUniqueId(), // Generate a unique ID
+                    customerName,
+                    medication,
+                    "Pending"
+            );
+            PrescriptionHandling.addPrescription(newPrescription); // Save the new prescription to storage
+
+            prescriptionData.add(newPrescription); // Add it to the observable list
+            prescriptionTable.refresh(); // Refresh the prescription table
+
+            // Update customer data after adding the prescription
+            loadCustomerData(); // Reload the customer data from storage
+        } catch (Exception e) {
+            showAlert("Failed to create prescription: " + e.getMessage(), "Error", Alert.AlertType.ERROR);
+        }
+    }
+
+    // Initialize the prescription table
     private void initializePrescriptionTracking() {
         idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
         customerColumn.setCellValueFactory(new PropertyValueFactory<>("customerName"));
@@ -677,6 +727,7 @@ public class MainDashboardController {
             showErrorAlert("Error", "Select a valid pending prescription.");
         }
     }
+    
     
     @FXML
     private void handleCancelPrescription(ActionEvent event) {

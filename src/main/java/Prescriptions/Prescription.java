@@ -11,16 +11,19 @@ public class Prescription {
     private String customerName;
     private String medicationName;
     private String status;
-
+    
+    
+    public Prescription() {
+    }
     /**
      * Represents a prescription with associated details such as customer name, medication name, and status.
      * This class provides getter and setter methods for the prescription attributes.
      */
     public Prescription(int id, String customerName, String medicationName, String status) {
-        this.id = id; // Unique identifier for the prescription
-        this.customerName = customerName; // Name of the customer for whom the prescription is issued
-        this.medicationName = medicationName; // Name of the prescribed medication
-        this.status = status; // Current status of the prescription (e.g., pending, fulfilled, etc.)
+        this.id = id;
+        this.customerName = customerName;
+        this.medicationName = medicationName;
+        this.status = status;
     }
 
     // Getter and setter methods for the Prescription attributes.

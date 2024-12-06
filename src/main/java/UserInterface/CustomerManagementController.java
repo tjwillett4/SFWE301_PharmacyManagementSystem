@@ -111,6 +111,15 @@ public class CustomerManagementController {
             showAlert(Alert.AlertType.WARNING, "No Selection", "Please select a customer to remove.");
         }
     }
+    
+    public void refreshCustomerTable() {
+        try {
+            customerList.setAll(AccountHandling.readCustomerStorage());
+            customerTable.refresh();
+        } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Error", "Failed to refresh customer data: " + e.getMessage());
+        }
+    }
 
     /**
      * Helper method to display alerts with a specific type, title, and message.
