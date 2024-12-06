@@ -43,6 +43,11 @@ public class MainDashboardController {
 	 @FXML private Button resetEmployeePassword;
 	 @FXML private Button addCustomerButton;
 	 @FXML private Button removeCustomerButton;
+	 @FXML private Button deleteAccountButton;
+	 @FXML private Button updateCustomerButton;
+	 @FXML private Button approvePrescription;
+	 @FXML private Button cancelPrescription;
+	 
 
 	 // Prescription Table
 	 @FXML private TableView<Prescription> prescriptionTable;
@@ -103,7 +108,12 @@ public class MainDashboardController {
 	            unlockAccount.setDisable(true);
 	            reportsTab.setDisable(true);
 	            inventoryTab.setDisable(true);
-	            resetEmployeePassword.setDisable(true);
+	            deleteAccountButton.setDisable(true);
+	            updateCustomerButton.setDisable(true);
+	            removeCustomerButton.setDisable(true);
+	            addCustomerButton.setDisable(true);
+	            approvePrescription.setDisable(true);
+	            cancelPrescription.setDisable(true);
 	        	break;
 	        case Cashier:
 	        	//Only sales permissions
@@ -115,7 +125,12 @@ public class MainDashboardController {
 	            unlockAccount.setDisable(true);
 	            reportsTab.setDisable(true);
 	            inventoryTab.setDisable(true);
-	            resetEmployeePassword.setDisable(true);
+	            deleteAccountButton.setDisable(true);
+	            updateCustomerButton.setDisable(true);
+	            removeCustomerButton.setDisable(true);
+	            addCustomerButton.setDisable(true);
+	            approvePrescription.setDisable(true);
+	            cancelPrescription.setDisable(true);
 	        	break;
 	        case pharmacyTech:
 	        	//Sale plus prescription/medication info. Cannot create prescriptions, only fulfill. 
@@ -125,7 +140,11 @@ public class MainDashboardController {
 	            unlockAccount.setDisable(true);
 	            reportsTab.setDisable(true);
 	            inventoryTab.setDisable(true);
-	            resetEmployeePassword.setDisable(true);
+	            deleteAccountButton.setDisable(true);
+	            removeCustomerButton.setDisable(true);
+	            addCustomerButton.setDisable(true);
+	            approvePrescription.setDisable(true);
+	            cancelPrescription.setDisable(true);
 	        	break;
 	        case pharmacist:
 	        	//Sale plus prescription/medication info. No management actions. 
@@ -133,7 +152,7 @@ public class MainDashboardController {
 	            unlockAccount.setDisable(true);
 	            reportsTab.setDisable(true);
 	            inventoryTab.setDisable(true);
-	            resetEmployeePassword.setDisable(true);
+	            deleteAccountButton.setDisable(true);
 	        	break;
 	        case pharmacyManager:
 	        	//All permissions enabled. 
@@ -150,6 +169,12 @@ public class MainDashboardController {
 	            unlockAccount.setDisable(true);
 	            reportsTab.setDisable(true);
 	            inventoryTab.setDisable(true);
+	            deleteAccountButton.setDisable(true);
+	            updateCustomerButton.setDisable(true);
+	            removeCustomerButton.setDisable(true);
+	            addCustomerButton.setDisable(true);
+	            approvePrescription.setDisable(true);
+	            cancelPrescription.setDisable(true);
 	        	break;
         	default:
             	//No permissions
@@ -162,48 +187,15 @@ public class MainDashboardController {
                 unlockAccount.setDisable(true);
                 reportsTab.setDisable(true);
                 inventoryTab.setDisable(true);
+                deleteAccountButton.setDisable(true);
+                updateCustomerButton.setDisable(true);
+                removeCustomerButton.setDisable(true);
+                addCustomerButton.setDisable(true);
+                approvePrescription.setDisable(true);
+	            cancelPrescription.setDisable(true);
                 break;
         		
         }
-    }
-    
-    @FXML
-    private void handleDeleteAccount(ActionEvent event) {
-        // Prompt the manager to enter the username of the account to delete
-        TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("Delete Account");
-        dialog.setHeaderText("Delete Employee Account");
-        dialog.setContentText("Enter the username of the account to delete:");
-
-        // Handle the input from the dialog
-        Optional<String> result = dialog.showAndWait();
-        result.ifPresent(username -> {
-            try {
-                // Check if the account exists
-                Employee emp = AccountHandling.getEmployeeByUsername(username);
-                if (emp == null) {
-                    showErrorAlert("Error", "No account found for username: " + username);
-                    return;
-                }
-
-                // Confirm deletion
-                Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION);
-                confirmationAlert.setTitle("Confirm Deletion");
-                confirmationAlert.setHeaderText("Are you sure?");
-                confirmationAlert.setContentText("Do you really want to delete the account for username: " + username + "?");
-
-                Optional<ButtonType> confirmation = confirmationAlert.showAndWait();
-                if (confirmation.isPresent() && confirmation.get() == ButtonType.OK) {
-                    // Perform the deletion
-                    AccountHandling.deleteEmployeeAccount(username);
-                    showInfoAlert("Success", "Account for username: " + username + " deleted successfully.");
-                }
-            } catch (Exception e) {
-                // Log the exception and show an error alert
-                e.printStackTrace();
-                showErrorAlert("Error", "Failed to delete account: " + e.getMessage());
-            }
-        });
     }
 
     @FXML
@@ -214,6 +206,13 @@ public class MainDashboardController {
 
     @FXML
     private void handleExit(ActionEvent event) {
+        try {
+            AccountHandling.saveCustomerData(new ArrayList<>(customerData)); // Save data to file
+        } catch (Exception e) {
+            e.printStackTrace();
+            showErrorAlert("Error", "Failed to save customer data on exit: " + e.getMessage());
+        }
+
         Alert exitConfirmation = new Alert(AlertType.CONFIRMATION);
         exitConfirmation.setTitle("Exit Confirmation");
         exitConfirmation.setHeaderText(null);
@@ -221,48 +220,6 @@ public class MainDashboardController {
         exitConfirmation.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
                 System.exit(0);
-            }
-        });
-    }
-    
-    @FXML
-    private void handleEmployeePasswordReset(ActionEvent event) {
-    	TextInputDialog dialogUsername = new TextInputDialog();
-    	dialogUsername.setTitle("Reset Employee Password");
-    	dialogUsername.setHeaderText("Resetting an employee password should only be done if the employee forgot their password.");
-    	dialogUsername.setContentText("Enter the username of the account:");
-    	
-    	TextInputDialog dialogNewPassword = new TextInputDialog();
-    	dialogNewPassword.setTitle("Reset EmployeePassword");
-    	dialogNewPassword.setHeaderText("Resetting an employee password should only be done if the employee forgot their password.");
-    	dialogNewPassword.setContentText("Enter the new password for the account");
-        
-    	dialogUsername.showAndWait().ifPresent(username -> {
-            try {
-            	Employee emp = AccountHandling.getEmployeeByUsername(username);
-            	
-            	if (emp == null) {
-            		showInfo("Error", "User not found.");
-            		return;
-            	}
-            	else {
-            		dialogNewPassword.showAndWait().ifPresent(password -> {
-            			emp.setPassword(password);
-            			try {
-							AccountHandling.updateEmployeeAccount(username, emp);
-							showInfo("Success", "Account password successfully changed for user: " + username);
-						} catch (Exception e) {
-							e.printStackTrace();
-							showError("Error", "Failed to update account password: " + e.getMessage());
-						}
-            		});
-            		
-            		
-            		
-            	}
-            } catch (Exception e) {
-                e.printStackTrace();
-                showError("Error", "Failed to update account password: " + e.getMessage());
             }
         });
     }
@@ -442,24 +399,176 @@ public class MainDashboardController {
     }
     
     @FXML
-    private void handleUpdateAccount(ActionEvent event) {
-        TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("Update Password");
-        dialog.setHeaderText("Enter your new password:");
-        dialog.setContentText("New Password:");
+    private void handleDeleteAccount(ActionEvent event) {
+        // Ensure only managers can delete accounts
+        Role currentRole = Session.getCurrentUser().getAccountRole();
+        if (currentRole != Role.pharmacyManager) {
+            showErrorAlert("Unauthorized Access", "Only managers can delete accounts.");
+            return;
+        }
 
+        // Prompt the manager to enter the username of the account to delete
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Delete Account");
+        dialog.setHeaderText("Delete Employee Account");
+        dialog.setContentText("Enter the username of the account to delete:");
+
+        // Handle the input from the dialog
         Optional<String> result = dialog.showAndWait();
-        result.ifPresent(newPassword -> {
+        result.ifPresent(username -> {
             try {
-                Employee currentUser = Session.getCurrentUser();
-                currentUser.setPassword(newPassword);
-                AccountHandling.updateEmployeeAccount(currentUser.getUsername(), currentUser);
-                showInfo("Success", "Password updated successfully.");
+                // Check if the account exists
+                Employee emp = AccountHandling.getEmployeeByUsername(username);
+                if (emp == null) {
+                    showErrorAlert("Error", "No account found for username: " + username);
+                    return;
+                }
+
+                // Confirm deletion
+                Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION);
+                confirmationAlert.setTitle("Confirm Deletion");
+                confirmationAlert.setHeaderText("Are you sure?");
+                confirmationAlert.setContentText("Do you really want to delete the account for username: " + username + "?");
+
+                Optional<ButtonType> confirmation = confirmationAlert.showAndWait();
+                if (confirmation.isPresent() && confirmation.get() == ButtonType.OK) {
+                    // Perform the deletion
+                    AccountHandling.deleteEmployeeAccount(username);
+                    showInfoAlert("Success", "Account for username: " + username + " deleted successfully.");
+                }
             } catch (Exception e) {
+                // Log the exception and show an error alert
                 e.printStackTrace();
-                showError("Error", "Failed to update password: " + e.getMessage());
+                showErrorAlert("Error", "Failed to delete account: " + e.getMessage());
             }
         });
+    }
+    
+    @FXML
+    private void handleUpdateAccount(ActionEvent event) {
+        // Get the current user's role and username
+        Role currentRole = Session.getCurrentUser().getAccountRole();
+        String currentUsername = Session.getCurrentUser().getUsername();
+
+        String targetUsername;
+
+        // Determine if the manager is updating another user's password or if the user is updating their own
+        if (currentRole == Role.pharmacyManager) {
+            // Manager is allowed to update any user's password
+            TextInputDialog dialog = new TextInputDialog();
+            dialog.setTitle("Update Password");
+            dialog.setHeaderText("Enter the username of the account to update:");
+            dialog.setContentText("Username:");
+            Optional<String> result = dialog.showAndWait();
+
+            if (result.isEmpty() || result.get().trim().isEmpty()) {
+                showErrorAlert("Error", "Username cannot be empty.");
+                return;
+            }
+            targetUsername = result.get();
+        } else {
+            // Non-manager users can only update their own password
+            targetUsername = currentUsername;
+        }
+
+        // Prompt for the new password
+        TextInputDialog passwordDialog = new TextInputDialog();
+        passwordDialog.setTitle("Update Password");
+        passwordDialog.setHeaderText("Enter the new password:");
+        passwordDialog.setContentText("New Password:");
+        Optional<String> passwordResult = passwordDialog.showAndWait();
+
+        if (passwordResult.isEmpty() || passwordResult.get().trim().isEmpty()) {
+            showErrorAlert("Error", "Password cannot be empty.");
+            return;
+        }
+
+        String newPassword = passwordResult.get();
+
+        try {
+            // Retrieve the employee account
+            Employee emp = AccountHandling.getEmployeeByUsername(targetUsername);
+            if (emp == null) {
+                showErrorAlert("Error", "Account with the username '" + targetUsername + "' not found.");
+                return;
+            }
+
+            // Update the password
+            emp.setPassword(newPassword);
+            AccountHandling.changeEmployeeAccount(targetUsername, emp);
+
+            // Inform the user of success
+            if (currentRole == Role.pharmacyManager) {
+                showInfoAlert("Success", "Password updated successfully for user: " + targetUsername);
+            } else {
+                showInfoAlert("Success", "Your password has been updated successfully.");
+            }
+        } catch (Exception e) {
+            // Handle any exceptions during the process
+            e.printStackTrace();
+            showErrorAlert("Error", "Failed to update password: " + e.getMessage());
+        }
+    }
+    
+    @FXML
+    private void handleEmployeePasswordReset(ActionEvent event) {
+        Role currentRole = Session.getCurrentUser().getAccountRole();
+        Employee currentUser = Session.getCurrentUser();
+
+        if (currentRole == Role.pharmacyManager) {
+            // If the current user is a manager, they can reset any employee's password
+            TextInputDialog dialogUsername = new TextInputDialog();
+            dialogUsername.setTitle("Reset Employee Password");
+            dialogUsername.setHeaderText("Resetting an employee password should only be done if the employee forgot their password.");
+            dialogUsername.setContentText("Enter the username of the account:");
+
+            dialogUsername.showAndWait().ifPresent(username -> {
+                try {
+                    Employee emp = AccountHandling.getEmployeeByUsername(username);
+
+                    if (emp == null) {
+                        showInfo("Error", "User not found.");
+                        return;
+                    }
+
+                    TextInputDialog dialogNewPassword = new TextInputDialog();
+                    dialogNewPassword.setTitle("Reset Employee Password");
+                    dialogNewPassword.setHeaderText("Enter the new password for the account:");
+                    dialogNewPassword.setContentText("New Password:");
+
+                    dialogNewPassword.showAndWait().ifPresent(password -> {
+                        emp.setPassword(password);
+                        try {
+                            AccountHandling.changeEmployeeAccount(username, emp);
+                            showInfo("Success", "Account password successfully changed for user: " + username);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            showError("Error", "Failed to update account password: " + e.getMessage());
+                        }
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    showError("Error", "Failed to retrieve or update account: " + e.getMessage());
+                }
+            });
+        } else {
+            // If the current user is not a manager, they can only reset their own password
+            TextInputDialog dialogNewPassword = new TextInputDialog();
+            dialogNewPassword.setTitle("Reset Your Password");
+            dialogNewPassword.setHeaderText("Enter your new password:");
+            dialogNewPassword.setContentText("New Password:");
+
+            dialogNewPassword.showAndWait().ifPresent(password -> {
+                try {
+                    currentUser.setPassword(password);
+                    AccountHandling.changeEmployeeAccount(currentUser.getUsername(), currentUser);
+                    showInfo("Success", "Your password has been successfully updated.");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    showError("Error", "Failed to update your password: " + e.getMessage());
+                }
+            });
+        }
     }
     
     @FXML
@@ -502,16 +611,26 @@ public class MainDashboardController {
     }
     
     private void loadCustomerData() {
-        List<Customer> mockCustomers = new ArrayList<>();
-        mockCustomers.add(new Customer("John", "john.doe@example.com", "123-456-7890"));
-        mockCustomers.add(new Customer("Jane", "jane.smith@example.com", "987-654-3210"));
-
-        customerData = FXCollections.observableArrayList(mockCustomers);
-        customerTable.setItems(customerData);
+        try {
+            List<Customer> customers = AccountHandling.loadCustomerData();
+            customerData = FXCollections.observableArrayList(customers);
+            customerTable.setItems(customerData);
+        } catch (Exception e) {
+            e.printStackTrace();
+            showErrorAlert("Error", "Failed to load customer data: " + e.getMessage());
+        }
     }
     
     @FXML
     private void handleApprovePrescription(ActionEvent event) {
+        // Check role-based authorization
+        Role currentRole = Session.getCurrentUser().getAccountRole();
+        if (currentRole == Role.Cashier) {
+            showErrorAlert("Unauthorized Access", "You do not have permission to approve prescriptions.");
+            return;
+        }
+
+        // Check if a prescription is selected
         Prescription selected = prescriptionTable.getSelectionModel().getSelectedItem();
         if (selected != null && "Pending".equalsIgnoreCase(selected.getStatus())) {
             selected.setStatus("Approved");
@@ -524,6 +643,14 @@ public class MainDashboardController {
     
     @FXML
     private void handleCancelPrescription(ActionEvent event) {
+        // Check role-based authorization
+        Role currentRole = Session.getCurrentUser().getAccountRole();
+        if (currentRole == Role.Cashier) {
+            showErrorAlert("Unauthorized Access", "You do not have permission to cancel prescriptions.");
+            return;
+        }
+
+        // Check if a prescription is selected
         Prescription selected = prescriptionTable.getSelectionModel().getSelectedItem();
         if (selected != null && "Pending".equalsIgnoreCase(selected.getStatus())) {
             selected.setStatus("Canceled");
@@ -695,14 +822,13 @@ public class MainDashboardController {
     @FXML
     private void handleAddCustomer(ActionEvent event) {
         try {
-            // Prompt for customer details
-            TextInputDialog firstNameDialog = new TextInputDialog();
-            firstNameDialog.setTitle("Add Customer");
-            firstNameDialog.setHeaderText("Enter Customer First Name:");
-            firstNameDialog.setContentText("First Name:");
-            Optional<String> firstNameResult = firstNameDialog.showAndWait();
+            TextInputDialog NameDialog = new TextInputDialog();
+            NameDialog.setTitle("Add Customer");
+            NameDialog.setHeaderText("Enter Customer First Name:");
+            NameDialog.setContentText("First Name:");
+            Optional<String> NameResult = NameDialog.showAndWait();
 
-            if (!firstNameResult.isPresent() || firstNameResult.get().trim().isEmpty()) {
+            if (!NameResult.isPresent() || NameResult.get().trim().isEmpty()) {
                 showError("Error", "Customer First Name is required.");
                 return;
             }
@@ -729,9 +855,9 @@ public class MainDashboardController {
                 return;
             }
 
-            // Create and add the new customer to the data list
-            Customer newCustomer = new Customer(firstNameResult.get(), emailResult.get(), phoneResult.get());
+            Customer newCustomer = new Customer(NameResult.get(), emailResult.get(), phoneResult.get());
             customerData.add(newCustomer);
+            AccountHandling.saveCustomerData(new ArrayList<>(customerData)); // Save data to file
             customerTable.refresh();
 
             showInfo("Success", "Customer added successfully.");
@@ -740,12 +866,21 @@ public class MainDashboardController {
             showError("Error", "Unable to add customer: " + e.getMessage());
         }
     }
+    
 
     /**
      * Handles removing a selected customer.
      */
     @FXML
     private void handleRemoveCustomer(ActionEvent event) {
+        // Check role-based authorization
+        Role currentRole = Session.getCurrentUser().getAccountRole();
+        if (currentRole != Role.pharmacyManager && currentRole != Role.pharmacist) {
+            showErrorAlert("Unauthorized Access", "You do not have permission to delete customer accounts.");
+            return;
+        }
+
+        // Check if a customer is selected
         Customer selectedCustomer = customerTable.getSelectionModel().getSelectedItem();
         if (selectedCustomer != null) {
             Alert confirmationAlert = new Alert(AlertType.CONFIRMATION);
@@ -756,14 +891,87 @@ public class MainDashboardController {
 
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 customerData.remove(selectedCustomer);
-                customerTable.refresh();
-                showInfo("Success", "Customer removed successfully.");
+                try {
+                    AccountHandling.saveCustomerData(new ArrayList<>(customerData)); // Save data to file
+                    customerTable.refresh();
+                    showInfo("Success", "Customer removed successfully.");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    showError("Error", "Failed to save customer data: " + e.getMessage());
+                }
             }
         } else {
             showError("Error", "No customer selected to remove.");
         }
     }
     
+    @FXML
+    private void handleUpdateCustomer(ActionEvent event) {
+        // Check role-based authorization
+        Role currentRole = Session.getCurrentUser().getAccountRole();
+        if (currentRole != Role.pharmacyTech && currentRole != Role.pharmacyManager && currentRole != Role.pharmacist) {
+            showErrorAlert("Unauthorized Access", "You do not have permission to update customer accounts.");
+            return;
+        }
+
+        // Check if a customer is selected
+        Customer selectedCustomer = customerTable.getSelectionModel().getSelectedItem();
+        if (selectedCustomer == null) {
+            showErrorAlert("Error", "No customer selected to update.");
+            return;
+        }
+
+        // Prompt for updated name
+        TextInputDialog NameDialog = new TextInputDialog(selectedCustomer.getFirstName());
+        NameDialog.setTitle("Update Customer");
+        NameDialog.setHeaderText("Update Name");
+        NameDialog.setContentText("Enter new name:");
+
+        Optional<String> newName = NameDialog.showAndWait();
+        if (!newName.isPresent() || newName.get().trim().isEmpty()) {
+            showErrorAlert("Error", "First name cannot be empty.");
+            return;
+        }
+        
+        // Prompt for updated email
+        TextInputDialog emailDialog = new TextInputDialog(selectedCustomer.getEmail());
+        emailDialog.setTitle("Update Customer");
+        emailDialog.setHeaderText("Update Email");
+        emailDialog.setContentText("Enter new email:");
+        Optional<String> newEmail = emailDialog.showAndWait();
+        if (!newEmail.isPresent() || newEmail.get().trim().isEmpty()) {
+            showErrorAlert("Error", "Email cannot be empty.");
+            return;
+        }
+        
+        // Prompt for updated phone number
+        TextInputDialog phoneDialog = new TextInputDialog(selectedCustomer.getPhoneNum());
+        phoneDialog.setTitle("Update Customer");
+        phoneDialog.setHeaderText("Update Phone Number");
+        phoneDialog.setContentText("Enter new phone number:");
+        Optional<String> newPhone = phoneDialog.showAndWait();
+        if (!newPhone.isPresent() || newPhone.get().trim().isEmpty()) {
+            showErrorAlert("Error", "Phone number cannot be empty.");
+            return;
+        }
+
+        // Update the customer object
+        selectedCustomer.setFirstName(newName.get());
+        selectedCustomer.setEmail(newEmail.get());
+        selectedCustomer.setPhoneNum(newPhone.get());
+        // Save updated data
+        try {
+            AccountHandling.saveCustomerData(new ArrayList<>(customerData)); // Save data to file
+        } catch (Exception e) {
+            e.printStackTrace();
+            showErrorAlert("Error", "Failed to save updated customer data: " + e.getMessage());
+            return;
+        }
+
+        // Refresh the table to reflect the changes
+        customerTable.refresh();
+        showInfo("Success", "Customer information updated successfully.");
+    }
  // Helper method to show error alerts
     private void showErrorAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);

@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 import UserInterface.Session;
+import javafx.collections.ObservableList;
 
 /*
  * Used to interact with encrypted files/user information. A kind of service for the in-between stages
@@ -373,18 +374,32 @@ public class AccountHandling {
 	
 	//updates a user account based on username. Verification done in controller.
 	public static void changeEmployeeAccount(String username, Employee acc) throws Exception {
-		//get accounts list:
-		ArrayList<Employee> accounts = readEmployeeStorage(FileHelper.findEmployeeFile());
-		
-		//find the account
-		for (Employee a : accounts) {
-			if (a.getUsername().equals(username)) {
-				accounts.set(accounts.indexOf(a), Serializer.encryptEmployee(acc));
-				break;
-			}
-		}
-		//update
-		AccountHandling.writeEmployee(accounts);
+	    // Get accounts list
+	    ArrayList<Employee> accounts = readEmployeeStorage(FileHelper.findEmployeeFile());
+
+	    // Check if the current user has the appropriate permissions
+	    Employee currentUser = Session.getCurrentUser(); // Assuming you have a method to get the logged-in user
+	    if (!currentUser.getUsername().equals(username) && currentUser.getAccountRole() != Role.pharmacyManager) {
+	        throw new Exception("Unauthorized Access: Only the account owner or a manager can update this account.");
+	    }
+
+	    // Find and update the account
+	    boolean accountUpdated = false;
+	    for (Employee a : accounts) {
+	        if (a.getUsername().equals(username)) {
+	            accounts.set(accounts.indexOf(a), Serializer.encryptEmployee(acc));
+	            accountUpdated = true;
+	            break;
+	        }
+	    }
+
+	    // If account not found, throw an exception
+	    if (!accountUpdated) {
+	        throw new Exception("Account not found for username: " + username);
+	    }
+
+	    // Write updated accounts back to storage
+	    AccountHandling.writeEmployee(accounts);
 	}
 	
 	
@@ -520,5 +535,30 @@ public class AccountHandling {
 			e4.printStackTrace();
 			throw new Exception("Something went wrong while trying to load the selected settings file."); 
 		}
+	}
+	
+	public static void updateCustomerData(ObservableList<Customer> customers) throws Exception {
+	    Path customerFile = FileHelper.findCustomerFile();
+	    XmlMapper mapper = new XmlMapper();
+	    mapper.writeValue(Files.newOutputStream(customerFile), new ArrayList<>(customers));
+	}
+	
+	public static List<Customer> loadCustomerData() throws Exception {
+	    Path customerFile = FileHelper.findCustomerFile();
+	    
+	    if (!Files.exists(customerFile) || customerFile.toFile().length() == 0) {
+	        return new ArrayList<>(); // Return empty list if file doesn't exist or is empty
+	    }
+
+	    XmlMapper mapper = new XmlMapper();
+	    TypeReference<List<Customer>> typeRef = new TypeReference<>() {};
+	    return mapper.readValue(Files.newInputStream(customerFile), typeRef);
+	}
+	
+	public static void saveCustomerData(List<Customer> customers) throws Exception {
+	    Path customerFile = FileHelper.findCustomerFile();
+	    XmlMapper mapper = new XmlMapper();
+	    mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+	    mapper.writeValue(Files.newOutputStream(customerFile), customers);
 	}
 }

@@ -104,4 +104,8 @@ public class Customer extends Account {
                 Arrays.asList("Lactose"), Arrays.asList("Paracetamol 500mg", "Atorvastatin 10mg")));
         return customers;
     }
+
+	public String setName(String string) {
+		return firstName + lastName;
+	}
 }
