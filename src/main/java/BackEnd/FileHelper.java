@@ -99,24 +99,7 @@ public class FileHelper {
         mapper.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
         return mapper;
 	}
-	
-	
-	// Read employee storage from a file
-    public static ArrayList<Employee> readEmployeeStorage(Path employeeFile) throws IOException {
-        if (!Files.exists(employeeFile) || employeeFile.toFile().length() == 0) {
-            return new ArrayList<>(); // Return an empty list if the file does not exist or is empty
-        }
 
-        XmlMapper mapper = createReadMapper();
-        try {
-            return mapper.readValue(Files.newInputStream(employeeFile),
-                    mapper.getTypeFactory().constructCollectionType(ArrayList.class, Employee.class));
-        } catch (IOException e) {
-            throw new IOException("Error reading employee storage file: " + e.getMessage(), e);
-        }
-    }
-
-    
     public static ArrayList<Medication> getAllMedications() throws Exception {
         Path medicationFile = findPharmacyInventoryFile();
 

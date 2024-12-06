@@ -1,7 +1,6 @@
 package BackEnd;
 
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.InaccessibleObjectException;
 import java.nio.file.Files;
@@ -31,8 +30,7 @@ public class AccountHandling {
     public static int getLockoutCount() {
         return LOCKOUT_COUNT;
     }
-    
-    private static List<Employee> employeeList = new ArrayList<>(); 
+
 
 
 	//Role requirement check. Takes in the empoyee attempting and a list of roles ["manager", "pharamacist"]
@@ -370,7 +368,7 @@ public class AccountHandling {
 	    boolean accountUpdated = false;
 	    for (Employee a : accounts) {
 	        if (a.getUsername().equals(username)) {
-	            accounts.set(accounts.indexOf(a), Serializer.encryptEmployee(acc));
+	            accounts.set(accounts.indexOf(a), acc);
 	            accountUpdated = true;
 	            break;
 	        }
@@ -473,6 +471,9 @@ public class AccountHandling {
 			throw new Exception("Error writing to the file. " + e);
 		}		
 	}
+	public static void saveCustomerData(List<Customer> customers) throws Exception {
+	    writeCustomer(new ArrayList<>(customers));
+	}
 
 	//writes an ecrypted Account LIST to storage. 
 	private static void writeCustomer(ArrayList<Customer> encryptedList) throws Exception {
@@ -536,10 +537,6 @@ public class AccountHandling {
 		}
 	}
 	
-	
-	/*
-	 * CUSTOMER FILE HANDLING
-	 */
 	public static void updateCustomerData(ObservableList<Customer> customers) throws Exception {
 	    Path customerFile = FileHelper.findCustomerFile();
 	    XmlMapper mapper = new XmlMapper();
@@ -558,10 +555,5 @@ public class AccountHandling {
 	    return mapper.readValue(Files.newInputStream(customerFile), typeRef);
 	}
 	
-	public static void saveCustomerData(List<Customer> customers) throws Exception {
-	    Path customerFile = FileHelper.findCustomerFile();
-	    XmlMapper mapper = new XmlMapper();
-	    mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-	    mapper.writeValue(Files.newOutputStream(customerFile), customers);
-	}
+
 }
