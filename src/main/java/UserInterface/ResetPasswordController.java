@@ -12,7 +12,14 @@ public class ResetPasswordController {
     @FXML private PasswordField newPasswordField;
     @FXML private PasswordField confirmPasswordField;
     @FXML private Label errorMessage;
-
+    
+    
+    /*
+     *Handles reset of user account password
+     ***User can only reset their own password
+     ***Managers able to reset any user's password
+     *
+     */
     @FXML
     private void handleResetPassword(ActionEvent event) {
         String username = usernameField.getText();
@@ -50,7 +57,7 @@ public class ResetPasswordController {
         }
     }
 
-    // Method to display alerts
+    //Method to display alerts
     private void showAlert(Alert.AlertType type, String title, String message) {
         Alert alert = new Alert(type);
         alert.setTitle(title);

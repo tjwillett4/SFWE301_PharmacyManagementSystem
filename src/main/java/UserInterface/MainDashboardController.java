@@ -30,7 +30,9 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
 public class MainDashboardController {
-
+	
+	 // Buttons used in the system for various functionalities, such as managing sales, 
+	 // inventory, prescriptions, employee accounts, and customer records.
 	 @FXML private Button processSale;
 	 @FXML private Button refillPrescription;
 	 @FXML private Button createPrescription;
@@ -67,12 +69,13 @@ public class MainDashboardController {
 
 
 
+	// Initializes the dashboard by checking user authorization, setting up prescription tracking and customer table functionalities, and loading customer data.
 	 @FXML
 	 private void initialize() {
-		 checkAuthorization();
-		    initializePrescriptionTracking();
-		    initializeCustomerTable();
-		    loadCustomerData();
+	     checkAuthorization(); // Ensures the user has the appropriate permissions to access features.
+	     initializePrescriptionTracking(); // Sets up the prescription tracking table.
+	     initializeCustomerTable(); // Configures the customer table for display.
+	     loadCustomerData(); // Loads customer data into the customer table.
 	 }
 
 
@@ -85,13 +88,15 @@ public class MainDashboardController {
 	doctor
      */
 	 
+	// Configures the customer table to display customer data and manages UI elements based on the user's role permissions.
 	 private void initializeCustomerTable() {
-		    customerNameColumn.setCellValueFactory(new PropertyValueFactory<>("firstName"));
-		    emailColumn.setCellValueFactory(new PropertyValueFactory<>("email"));
-		    phoneColumn.setCellValueFactory(new PropertyValueFactory<>("phoneNum"));
+	     customerNameColumn.setCellValueFactory(new PropertyValueFactory<>("firstName")); // Maps the first name property to the table column.
+	     emailColumn.setCellValueFactory(new PropertyValueFactory<>("email")); // Maps the email property to the table column.
+	     phoneColumn.setCellValueFactory(new PropertyValueFactory<>("phoneNum")); // Maps the phone number property to the table column.
 
-		    customerTable.setItems(customerData);
-		}
+	     customerTable.setItems(customerData); // Sets the customer data to the table view.
+	 }
+
     //Show or hide UI based on the permissions of the user. 
     private void checkAuthorization() {
         Role currentRole = Session.getCurrentUser().getAccountRole();
@@ -198,34 +203,40 @@ public class MainDashboardController {
         }
     }
 
+    // Handles the user logout process by clearing the session and navigating back to the login screen.
     @FXML
     private void handleLogout(ActionEvent event) {
-        Session.clear();
-        NavigationUtil.loadLoginScreen(event);
+        Session.clear(); // Clear the current user session.
+        NavigationUtil.loadLoginScreen(event); // Redirect to the login screen.
     }
 
+    // Handles the application exit process, saving customer data to a file and showing a confirmation dialog.
     @FXML
     private void handleExit(ActionEvent event) {
         try {
-            AccountHandling.saveCustomerData(new ArrayList<>(customerData)); // Save data to file
+            // Save customer data to a file before exiting.
+            AccountHandling.saveCustomerData(new ArrayList<>(customerData));
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(); // Log any errors during saving.
             showErrorAlert("Error", "Failed to save customer data on exit: " + e.getMessage());
         }
 
+        // Show an exit confirmation dialog.
         Alert exitConfirmation = new Alert(AlertType.CONFIRMATION);
         exitConfirmation.setTitle("Exit Confirmation");
         exitConfirmation.setHeaderText(null);
         exitConfirmation.setContentText("Are you sure you want to exit?");
         exitConfirmation.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
-                System.exit(0);
+                System.exit(0); // Exit the application if confirmed.
             }
         });
     }
-    
+
+    // Handles the unlocking of locked employee accounts by prompting for a username and performing the unlock operation.
     @FXML
     private void handleUnlockAccount(ActionEvent event) {
+        // Prompt the user to enter the username of the account to unlock.
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle("Unlock Account");
         dialog.setHeaderText("Unlock a Locked Account");
@@ -233,6 +244,7 @@ public class MainDashboardController {
 
         dialog.showAndWait().ifPresent(username -> {
             try {
+                // Attempt to unlock the account with the specified username.
                 boolean success = AccountHandling.unlockEmployeeAccount(username, Session.getCurrentUser().getUsername());
                 if (success) {
                     showInfo("Success", "Account successfully unlocked for user: " + username);
@@ -240,29 +252,31 @@ public class MainDashboardController {
                     showError("Error", "Failed to unlock account. User not found.");
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                e.printStackTrace(); // Log any errors during the unlock process.
                 showError("Error", "Failed to unlock account: " + e.getMessage());
             }
         });
     }
     
+    // Handles the process of completing a sale and displays a success message.
     @FXML
     private void handleProcessSale(ActionEvent event) {
-        Alert saleAlert = new Alert(AlertType.INFORMATION);
-        saleAlert.setTitle("Process Sale");
-        saleAlert.setHeaderText("Processing Sale");
-        saleAlert.setContentText("Sale processed successfully!");
-        saleAlert.showAndWait();
+        Alert saleAlert = new Alert(AlertType.INFORMATION); // Create an informational alert.
+        saleAlert.setTitle("Process Sale"); // Set the alert title.
+        saleAlert.setHeaderText("Processing Sale"); // Set the header text for the alert.
+        saleAlert.setContentText("Sale processed successfully!"); // Set the content of the alert.
+        saleAlert.showAndWait(); // Display the alert and wait for user acknowledgment.
     }
-    
+
+    // Opens the inventory management interface, displaying the inventory in a TableView.
     @FXML
     private void openInventoryManagement(ActionEvent event) {
         try {
-            // Retrieve inventory
+            // Retrieve the inventory data from the system.
             ArrayList<Medication> inventoryList = PharmacyInventory.readPharmacyInventory();
             ObservableList<Medication> observableInventory = FXCollections.observableArrayList(inventoryList);
 
-            // Create TableView for Inventory Management
+            // Create a TableView to display the inventory details.
             TableView<Medication> tableView = new TableView<>();
             TableColumn<Medication, String> nameColumn = new TableColumn<>("Name");
             nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
@@ -273,48 +287,52 @@ public class MainDashboardController {
             TableColumn<Medication, String> supplierColumn = new TableColumn<>("Supplier");
             supplierColumn.setCellValueFactory(new PropertyValueFactory<>("supplier"));
 
+            // Add columns to the TableView.
             tableView.getColumns().addAll(nameColumn, categoryColumn, stockColumn, supplierColumn);
-            tableView.setItems(observableInventory);
+            tableView.setItems(observableInventory); // Set the inventory data to the TableView.
 
-            // Show TableView in a new Stage
+            // Create and show a new stage for inventory management.
             Stage inventoryStage = new Stage();
             inventoryStage.setTitle("Inventory Management");
-            inventoryStage.setScene(new javafx.scene.Scene(tableView, 600, 400));
-            inventoryStage.show();
+            inventoryStage.setScene(new javafx.scene.Scene(tableView, 600, 400)); // Set dimensions for the stage.
+            inventoryStage.show(); // Display the stage.
         } catch (Exception e) {
-            e.printStackTrace();
-            showError("Error", "Unable to load inventory management.");
+            e.printStackTrace(); // Log any exceptions that occur.
+            showError("Error", "Unable to load inventory management."); // Show an error message.
         }
     }
-    
+
+    // Opens a dialog to add a new inventory item to the system.
     @FXML
     private void addInventory(ActionEvent event) {
         try {
-            // Open a dialog or form for adding a new inventory item
+            // Create a dialog for user input.
             TextInputDialog dialog = new TextInputDialog();
-            dialog.setTitle("Add Inventory");
-            dialog.setHeaderText("Add a New Inventory Item");
-            dialog.setContentText("Enter item details:");
+            dialog.setTitle("Add Inventory"); // Set the dialog title.
+            dialog.setHeaderText("Add a New Inventory Item"); // Set the dialog header.
+            dialog.setContentText("Enter item details:"); // Set the content text.
 
-            // Show the dialog and wait for input
+            // Show the dialog and wait for user input.
             dialog.showAndWait().ifPresent(itemDetails -> {
-                // Logic to add the item to the inventory
+                // Logic to handle adding the inventory item (currently a placeholder).
                 System.out.println("Item added: " + itemDetails);
-                showInfo("Success", "Inventory item added successfully.");
+                showInfo("Success", "Inventory item added successfully."); // Show success message.
             });
         } catch (Exception e) {
-            e.printStackTrace();
-            showError("Error", "Unable to add inventory item.");
+            e.printStackTrace(); // Log any exceptions that occur.
+            showError("Error", "Unable to add inventory item."); // Show an error message.
         }
     }
     
+ // Handles displaying the inventory in a new TableView window.
     @FXML
     private void handleViewInventory(ActionEvent event) {
         try {
+            // Retrieve the inventory list from the system.
             ArrayList<Medication> inventoryList = PharmacyInventory.readPharmacyInventory();
             ObservableList<Medication> observableInventory = FXCollections.observableArrayList(inventoryList);
 
-            // Create TableView
+            // Create a TableView to display inventory details.
             TableView<Medication> tableView = new TableView<>();
             TableColumn<Medication, String> nameColumn = new TableColumn<>("Name");
             nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
@@ -325,104 +343,119 @@ public class MainDashboardController {
             TableColumn<Medication, String> supplierColumn = new TableColumn<>("Supplier");
             supplierColumn.setCellValueFactory(new PropertyValueFactory<>("supplier"));
 
+            // Add columns to the TableView.
             tableView.getColumns().addAll(nameColumn, categoryColumn, stockColumn, supplierColumn);
-            tableView.setItems(observableInventory);
+            tableView.setItems(observableInventory); // Bind inventory data to the TableView.
 
-            // Display in a new stage
+            // Create and display a new stage for inventory.
             Stage inventoryStage = new Stage();
             inventoryStage.setTitle("Inventory");
-            inventoryStage.setScene(new javafx.scene.Scene(tableView, 600, 400));
-            inventoryStage.show();
+            inventoryStage.setScene(new javafx.scene.Scene(tableView, 600, 400)); // Set stage dimensions.
+            inventoryStage.show(); // Display the stage.
         } catch (Exception e) {
+            // Handle any exceptions and display an error alert.
             showErrorAlert("Error", "Unable to load inventory: " + e.getMessage());
         }
     }
-    
+
+    // Handles the process of adding a new employee to the system.
     @FXML
     private void handleAddEmployee(ActionEvent event) {
         try {
-            // Prompt for employee details
+            // Prompt for the employee's username.
             TextInputDialog usernameDialog = new TextInputDialog();
-            usernameDialog.setTitle("Add Employee");
-            usernameDialog.setHeaderText("Enter Employee Username:");
-            usernameDialog.setContentText("Username:");
+            usernameDialog.setTitle("Add Employee"); // Set dialog title.
+            usernameDialog.setHeaderText("Enter Employee Username:"); // Set header text.
+            usernameDialog.setContentText("Username:"); // Set content text.
             Optional<String> usernameResult = usernameDialog.showAndWait();
 
-            if (!usernameResult.isPresent()) return; // Exit if canceled
-            String username = usernameResult.get();
+            if (!usernameResult.isPresent()) return; // Exit if no input.
+            String username = usernameResult.get(); // Get the entered username.
 
+            // Prompt for the employee's password.
             TextInputDialog passwordDialog = new TextInputDialog();
             passwordDialog.setTitle("Add Employee");
             passwordDialog.setHeaderText("Enter Employee Password:");
             passwordDialog.setContentText("Password:");
             Optional<String> passwordResult = passwordDialog.showAndWait();
 
-            if (!passwordResult.isPresent()) return; // Exit if canceled
-            String password = passwordResult.get();
+            if (!passwordResult.isPresent()) return; // Exit if no input.
+            String password = passwordResult.get(); // Get the entered password.
 
+            // Prompt to select the employee's role.
             ChoiceDialog<Role> roleDialog = new ChoiceDialog<>(Role.pharmacyTech, Role.values());
             roleDialog.setTitle("Add Employee");
             roleDialog.setHeaderText("Select Employee Role:");
             roleDialog.setContentText("Role:");
             Optional<Role> roleResult = roleDialog.showAndWait();
 
-            if (!roleResult.isPresent()) return; // Exit if canceled
-            Role role = roleResult.get();
+            if (!roleResult.isPresent()) return; // Exit if no selection.
+            Role role = roleResult.get(); // Get the selected role.
 
-            // Create the new employee and add to the system
+            // Create a new Employee object and add it to the system.
             Employee newEmployee = new Employee(username, password, role);
             AccountHandling.addEmployeeAccount(newEmployee);
 
+            // Display a success message.
             showInfo("Success", "Employee " + username + " added successfully.");
         } catch (Exception e) {
+            // Handle any exceptions and display an error message.
             e.printStackTrace();
             showError("Error", "Failed to add employee: " + e.getMessage());
         }
     }
     
+    // Opens the Management Interface, accessible only to managers.
     @FXML
     private void openManagementInterface(ActionEvent event) {
+        // Verify the current user's role is 'pharmacyManager'.
         Role currentRole = Session.getCurrentUser().getAccountRole();
         if (currentRole != Role.pharmacyManager) {
+            // Show an error message if unauthorized access is attempted.
             showError("Unauthorized Access", "Only managers can access this interface.");
             return;
         }
 
         try {
+            // Load the Management Interface.
             NavigationUtil.loadManagementInterface(event);
         } catch (Exception e) {
+            // Handle exceptions and display an error message.
             e.printStackTrace();
             showError("Error", "Unable to open Management Interface.");
         }
     }
-    
+
+    // Handles account deletion, restricted to manager role.
     @FXML
     private void handleDeleteAccount(ActionEvent event) {
-        // Ensure only managers can delete accounts
+        // Ensure the current user's role is 'pharmacyManager'.
         Role currentRole = Session.getCurrentUser().getAccountRole();
         if (currentRole != Role.pharmacyManager) {
+            // Show an error alert for unauthorized access.
             showErrorAlert("Unauthorized Access", "Only managers can delete accounts.");
             return;
         }
 
-        // Prompt the manager to enter the username of the account to delete
+        // Prompt the manager to input the username of the account to be deleted.
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle("Delete Account");
         dialog.setHeaderText("Delete Employee Account");
         dialog.setContentText("Enter the username of the account to delete:");
 
-        // Handle the input from the dialog
+        // Handle the manager's input.
         Optional<String> result = dialog.showAndWait();
         result.ifPresent(username -> {
             try {
-                // Check if the account exists
+                // Check if the account exists in the system.
                 Employee emp = AccountHandling.getEmployeeByUsername(username);
                 if (emp == null) {
+                    // Display an error if the account is not found.
                     showErrorAlert("Error", "No account found for username: " + username);
                     return;
                 }
 
-                // Confirm deletion
+                // Confirm the deletion with the manager.
                 Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION);
                 confirmationAlert.setTitle("Confirm Deletion");
                 confirmationAlert.setHeaderText("Are you sure?");
@@ -430,12 +463,12 @@ public class MainDashboardController {
 
                 Optional<ButtonType> confirmation = confirmationAlert.showAndWait();
                 if (confirmation.isPresent() && confirmation.get() == ButtonType.OK) {
-                    // Perform the deletion
+                    // Perform account deletion upon confirmation.
                     AccountHandling.deleteEmployeeAccount(username);
                     showInfoAlert("Success", "Account for username: " + username + " deleted successfully.");
                 }
             } catch (Exception e) {
-                // Log the exception and show an error alert
+                // Log the exception and display an error alert.
                 e.printStackTrace();
                 showErrorAlert("Error", "Failed to delete account: " + e.getMessage());
             }
@@ -508,13 +541,18 @@ public class MainDashboardController {
         }
     }
     
+    /**
+     * Handles resetting an employee's password.
+     * - Managers can reset passwords for any employee.
+     * - Non-managers can reset only their own password.
+     */
     @FXML
     private void handleEmployeePasswordReset(ActionEvent event) {
         Role currentRole = Session.getCurrentUser().getAccountRole();
         Employee currentUser = Session.getCurrentUser();
 
         if (currentRole == Role.pharmacyManager) {
-            // If the current user is a manager, they can reset any employee's password
+            // Manager's workflow to reset another employee's password
             TextInputDialog dialogUsername = new TextInputDialog();
             dialogUsername.setTitle("Reset Employee Password");
             dialogUsername.setHeaderText("Resetting an employee password should only be done if the employee forgot their password.");
@@ -525,19 +563,21 @@ public class MainDashboardController {
                     Employee emp = AccountHandling.getEmployeeByUsername(username);
 
                     if (emp == null) {
+                        // Show an error if the employee is not found
                         showInfo("Error", "User not found.");
                         return;
                     }
 
+                    // Prompt for the new password
                     TextInputDialog dialogNewPassword = new TextInputDialog();
                     dialogNewPassword.setTitle("Reset Employee Password");
                     dialogNewPassword.setHeaderText("Enter the new password for the account:");
                     dialogNewPassword.setContentText("New Password:");
 
                     dialogNewPassword.showAndWait().ifPresent(password -> {
-                        emp.setPassword(password);
+                        emp.setPassword(password); // Set the new password
                         try {
-                            AccountHandling.changeEmployeeAccount(username, emp);
+                            AccountHandling.changeEmployeeAccount(username, emp); // Update account
                             showInfo("Success", "Account password successfully changed for user: " + username);
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -550,7 +590,7 @@ public class MainDashboardController {
                 }
             });
         } else {
-            // If the current user is not a manager, they can only reset their own password
+            // Workflow for non-managers to reset their own password
             TextInputDialog dialogNewPassword = new TextInputDialog();
             dialogNewPassword.setTitle("Reset Your Password");
             dialogNewPassword.setHeaderText("Enter your new password:");
@@ -558,8 +598,8 @@ public class MainDashboardController {
 
             dialogNewPassword.showAndWait().ifPresent(password -> {
                 try {
-                    currentUser.setPassword(password);
-                    AccountHandling.changeEmployeeAccount(currentUser.getUsername(), currentUser);
+                    currentUser.setPassword(password); // Update user's own password
+                    AccountHandling.changeEmployeeAccount(currentUser.getUsername(), currentUser); // Save changes
                     showInfo("Success", "Your password has been successfully updated.");
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -568,7 +608,10 @@ public class MainDashboardController {
             });
         }
     }
-    
+
+    /**
+     * Handles updating the contact information of the currently logged-in user.
+     */
     @FXML
     private void handleUpdateContactInfo(ActionEvent event) {
         TextInputDialog dialog = new TextInputDialog();
@@ -576,13 +619,12 @@ public class MainDashboardController {
         dialog.setHeaderText("Enter your updated contact information:");
         dialog.setContentText("Contact Info:");
 
-        Optional<String> result = dialog.showAndWait();
-        result.ifPresent(newContactInfo -> {
+        dialog.showAndWait().ifPresent(newContactInfo -> {
             try {
                 Employee currentUser = Session.getCurrentUser();
-                // Assuming there is a method to update contact information
-                currentUser.setContactInfo(newContactInfo); // Add this setter in Employee class
-                AccountHandling.updateEmployeeAccount(currentUser.getUsername(), currentUser);
+                // Update contact information (requires a setter in Employee class)
+                currentUser.setContactInfo(newContactInfo);
+                AccountHandling.updateEmployeeAccount(currentUser.getUsername(), currentUser); // Save changes
                 showInfo("Success", "Contact information updated successfully.");
             } catch (Exception e) {
                 e.printStackTrace();
@@ -659,25 +701,39 @@ public class MainDashboardController {
         }
     }
     
+    /**
+     * Handles viewing the details of a selected customer.
+     * Displays a dialog showing the customer's name, email, and phone number.
+     * Shows an error alert if no customer is selected.
+     */
     @FXML
     private void handleViewCustomerDetails() {
         Customer selected = customerTable.getSelectionModel().getSelectedItem();
         if (selected != null) {
+            // Construct and display customer details
             String details = "Name: " + selected.getFirstName() + "\n" +
-                    "Email: " + selected.getEmail() + "\n" +
-                    "Phone: " + selected.getPhoneNum();
+                             "Email: " + selected.getEmail() + "\n" +
+                             "Phone: " + selected.getPhoneNum();
             showInfoAlert("Customer Details", details);
         } else {
+            // Display error alert if no customer is selected
             showErrorAlert("Error", "No customer selected.");
         }
     }
-    
+
+    /**
+     * Handles refilling a prescription for a selected customer.
+     * Displays a success alert if a customer is selected and the refill is successful.
+     * Shows an error alert if no customer is selected.
+     */
     @FXML
     private void handleRefillCustomerPrescription() {
         Customer selected = customerTable.getSelectionModel().getSelectedItem();
         if (selected != null) {
+            // Display success alert for refill
             showInfoAlert("Refill Successful", "Prescription refilled for: " + selected.getFirstName());
         } else {
+            // Display error alert if no customer is selected
             showErrorAlert("Error", "Select a customer to refill.");
         }
     }
@@ -694,35 +750,56 @@ public class MainDashboardController {
         }
     }
     
+    /**
+     * Handles searching for a medication in the inventory.
+     * Prompts the user to enter a medication name through a dialog.
+     * Searches the inventory for a medication matching the entered name and displays its details if found.
+     * Shows an error alert if an issue occurs during the search or if no matching medication is found.
+     */
     @FXML
     private void handleSearchMedications(ActionEvent event) {
+        // Display a dialog to prompt the user for a medication name
         TextInputDialog searchDialog = new TextInputDialog();
         searchDialog.setTitle("Search Medications");
         searchDialog.setHeaderText("Search for a Medication");
         searchDialog.setContentText("Enter medication name:");
 
+        // Handle the user input and search the inventory
         searchDialog.showAndWait().ifPresent(searchQuery -> {
             try {
+                // Retrieve the inventory list
                 ArrayList<Medication> inventoryList = PharmacyInventory.readPharmacyInventory();
+                
+                // Search for a matching medication
                 Medication result = inventoryList.stream()
                         .filter(med -> med.getName().equalsIgnoreCase(searchQuery))
                         .findFirst()
                         .orElse(null);
 
+                // Display the result of the search
                 if (result != null) {
-                    showInfoAlert("Medication Found", "Name: " + result.getName() + "\nCategory: " + result.getCategory() + "\nStock: " + result.getStock());
+                    showInfoAlert("Medication Found", 
+                                  "Name: " + result.getName() + "\n" +
+                                  "Category: " + result.getCategory() + "\n" +
+                                  "Stock: " + result.getStock());
                 } else {
-                    showInfoAlert("Not Found", "No medication found with the name: " + searchQuery);
+                    showInfoAlert("Not Found", 
+                                  "No medication found with the name: " + searchQuery);
                 }
             } catch (Exception e) {
+                // Show an error alert if the search fails
                 showErrorAlert("Error", "Unable to search medications: " + e.getMessage());
             }
         });
     }
     
+    /**
+     * Handles updating the inventory by navigating to the medication screen.
+     * Utilizes the `NavigationUtil` class to load the "Medication" screen for inventory management.
+     */
     @FXML
     private void handleUpdateInventory(ActionEvent event) {
-    	NavigationUtil.loadMedicationScreen(event);
+        NavigationUtil.loadMedicationScreen(event);
     	/*
         try {
             TextInputDialog dialog = new TextInputDialog();
@@ -753,15 +830,12 @@ public class MainDashboardController {
         }*/
     }
 
-    @FXML
-    private void handleProcessPrescription(ActionEvent event) {
-        showInfo("Processing Prescription", "Prescription is being processed.");
-    }
-
-    @FXML void handlePrescriptionCreation(ActionEvent event) {
-    	//TODO: Create the prescriptions. 
-    }
-    
+    /**
+     * Handles the refill of a prescription for a customer.
+     * - Prompts the user to input customer and medication details.
+     * - Checks inventory for the requested medication.
+     * - Updates inventory and confirms the refill if stock is available.
+     */
     @FXML
     private void handleRefillPrescription(ActionEvent event) {
         try {
@@ -817,9 +891,18 @@ public class MainDashboardController {
         }
     }
     
+    /**
+     * Handles adding a new customer to the system.
+     * - Prompts the user for the customer's name, email, and phone number.
+     * - Validates that all fields are filled before proceeding.
+     * - Creates a new `Customer` object and adds it to the customer data list.
+     * - Saves the updated customer data to persistent storage and refreshes the table view.
+     * - Displays success or error messages as appropriate.
+     */
     @FXML
     private void handleAddCustomer(ActionEvent event) {
         try {
+            // Prompt for customer's name
             TextInputDialog NameDialog = new TextInputDialog();
             NameDialog.setTitle("Add Customer");
             NameDialog.setHeaderText("Enter Customer Name:");
@@ -831,6 +914,7 @@ public class MainDashboardController {
                 return;
             }
 
+            // Prompt for customer's email
             TextInputDialog emailDialog = new TextInputDialog();
             emailDialog.setTitle("Add Customer");
             emailDialog.setHeaderText("Enter Customer Email:");
@@ -842,6 +926,7 @@ public class MainDashboardController {
                 return;
             }
 
+            // Prompt for customer's phone number
             TextInputDialog phoneDialog = new TextInputDialog();
             phoneDialog.setTitle("Add Customer");
             phoneDialog.setHeaderText("Enter Customer Phone Number:");
@@ -853,11 +938,17 @@ public class MainDashboardController {
                 return;
             }
 
+            // Create a new customer and add to the data list
             Customer newCustomer = new Customer(NameResult.get(), emailResult.get(), phoneResult.get());
             customerData.add(newCustomer);
-            AccountHandling.saveCustomerData(new ArrayList<>(customerData)); // Save data to file
+
+            // Save updated customer data to persistent storage
+            AccountHandling.saveCustomerData(new ArrayList<>(customerData));
+
+            // Refresh the table view
             customerTable.refresh();
 
+            // Display success message
             showInfo("Success", "Customer added successfully.");
         } catch (Exception e) {
             e.printStackTrace();
@@ -986,7 +1077,15 @@ public class MainDashboardController {
         customerTable.refresh();
         showInfo("Success", "Customer information updated successfully.");
     }
- // Helper method to show error alerts
+    
+    /**
+     * Helper methods to display various types of alerts to the user.
+     * - `showErrorAlert`: Displays an error alert with a specified title and message.
+     * - `showInfo`: Displays an informational alert with a specified title and message.
+     * - `showError`: Displays an error alert (alternative to `showErrorAlert`) with a specified title and message.
+     * - `showInfoAlert`: Displays an informational alert (alternative to `showInfo`) with a specified title and message.
+     * - `showAlert`: Generalized method to display an alert of a specified type, title, and message.
+     */
     private void showErrorAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
@@ -1010,7 +1109,7 @@ public class MainDashboardController {
         alert.setContentText(message);
         alert.showAndWait();
     }
-    
+
     private void showInfoAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
@@ -1018,7 +1117,7 @@ public class MainDashboardController {
         alert.setContentText(message);
         alert.showAndWait();
     }
-    
+
     private void showAlert(String title, String message, Alert.AlertType alertType) {
         Alert alert = new Alert(alertType);
         alert.setTitle(title);

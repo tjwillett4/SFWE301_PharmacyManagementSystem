@@ -1,20 +1,14 @@
 package UserInterface;
 
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.stage.Stage;
-import javafx.event.ActionEvent;
-import BackEnd.FileHelper;
-import BackEnd.Role;
-import BackEnd.Employee;
 import BackEnd.AccountHandling;
-import UserInterface.Session;
-
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.ArrayList;
+import BackEnd.Employee;
+import BackEnd.Role;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 
 public class LoginController {
 
@@ -22,7 +16,14 @@ public class LoginController {
     @FXML private PasswordField passwordField;
     @FXML private Label errorMessage;
     
-    //testing default login
+    
+    /**
+     * Handles the login process for the user.
+     * - Validates the username and password entered in the login form.
+     * - Checks for various scenarios like empty passwords, invalid roles, and null usernames.
+     * - Navigates to the appropriate dashboard on successful login.
+     * - Displays appropriate error alerts on login failure.
+     */
     @FXML
     private void handleLogin(ActionEvent event) {
         String username = usernameField.getText();
@@ -31,17 +32,17 @@ public class LoginController {
         try {
             Employee authenticatedEmployee = AccountHandling.logIn(username, password);
 
-            //if password length is zero or it doesn't have a role, Issue Logging in
+            // Handle login issues related to empty passwords or missing roles
             if (authenticatedEmployee.getPassword().length() == 0 || authenticatedEmployee.getAccountRole() == null) {
                 System.out.println(authenticatedEmployee.getUsername());
                 showAlert(Alert.AlertType.ERROR, "Issue Logging In", authenticatedEmployee.getUsername());
             } 
-            //If the username is null, invalid log in attempt, for some reason. 
+            // Handle invalid login attempts (e.g., null username)
             else if (authenticatedEmployee.getUsername() == null) {
                 System.out.println("Invalid login attempt for user: " + username);
                 handleFailedLogin(username);
             } 
-            //Successful login attempt. 
+            // Handle successful login
             else {
                 System.out.println("Login successful for user: " + username);
                 Session.setCurrentUser(authenticatedEmployee);
@@ -52,7 +53,13 @@ public class LoginController {
             showAlert(Alert.AlertType.ERROR, "Error", "An error occurred during login.");
         }
     }
-    
+
+    /**
+     * Redirects the authenticated user to the appropriate dashboard based on their role.
+     * - Full access for pharmacy managers.
+     * - Limited dashboards for pharmacy technicians, cashiers, and pharmacists.
+     * - Displays an error alert for unsupported roles.
+     */
     private void redirectToDashboard(Employee employee, ActionEvent event) {
         Role role = employee.getAccountRole();
 
@@ -61,58 +68,25 @@ public class LoginController {
                 NavigationUtil.loadMainDashboard(); // Full access for managers
                 break;
             case pharmacyTech:
-                NavigationUtil.loadMainDashboard(); // Limited dashboard for tech
+                NavigationUtil.loadMainDashboard(); // Limited dashboard for pharmacy technicians
                 break;
             case Cashier:
-                NavigationUtil.loadMainDashboard(); // Simplified dashboard for cashier
+                NavigationUtil.loadMainDashboard(); // Simplified dashboard for cashiers
                 break;
             case pharmacist:
-                NavigationUtil.loadMainDashboard(); // Simplified dashboard for cashier
+                NavigationUtil.loadMainDashboard(); // Dashboard for pharmacists
                 break;
             default:
                 showAlert(Alert.AlertType.ERROR, "Unauthorized", "Your role is not supported in the system.");
         }
     }
-    /*
-    @FXML
-    private void handleLogin(ActionEvent event) {
-        String username = usernameField.getText();
-        String password = passwordField.getText();
-
-        try {
-            // Attempt to log in using AccountHandling
-            Employee authenticatedEmployee = AccountHandling.logIn(username, password);
-
-            if (authenticatedEmployee == null) {
-                // Account is locked
-                showAlert(Alert.AlertType.ERROR, "Account Locked", "Your account is locked. Please contact an administrator.");
-                return;
-            }
-
-            if (authenticatedEmployee.getUsername() == null) {
-                // Invalid username or password
-                handleFailedLogin(username);
-            } else {
-                // Successful login
-                Session.setCurrentUser(authenticatedEmployee);
-
-                // Navigate to MainDashboard.fxml
-                try {
-                    FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/MainDashboard.fxml"));
-                    Scene scene = new Scene(fxmlLoader.load());
-                    Stage stage = (Stage) usernameField.getScene().getWindow(); // Get the current stage
-                    stage.setScene(scene);
-                    stage.setTitle("Pharmacy Management System - Main Dashboard");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    showAlert(Alert.AlertType.ERROR, "Error", "Failed to load the dashboard.");
-                }
-            }
-        } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, "Error", "An error occurred: " + e.getMessage());
-            e.printStackTrace();}
-        }
-*/
+    
+    /**
+     * Handles failed login attempts by updating the backend and notifying the user.
+     * - Increments login attempts for the given username.
+     * - Checks if the account is locked after the failed attempt.
+     * - Displays an error alert if the account is locked or login fails.
+     */
     private void handleFailedLogin(String username) {
         try {
             // Increment login attempts in the backend
@@ -130,17 +104,29 @@ public class LoginController {
             e.printStackTrace();
         }
     }
-    
+
+    /**
+     * Displays a placeholder message for the "Forgot Password" functionality.
+     * Currently, the functionality is not implemented.
+     */
     @FXML
     private void handleForgotPassword() {
         errorMessage.setText("Password recovery is not implemented yet.");
     }
-    
+
+    /**
+     * Exits the application when the "Exit" button is clicked.
+     */
     @FXML
     private void handleExit(ActionEvent event) {
         System.exit(0);
     }
 
+    /**
+     * Helper method to display an alert with the given type, title, and message.
+     * - Supports various types of alerts (e.g., ERROR, INFORMATION).
+     * - The alert is shown as a modal dialog.
+     */
     private void showAlert(Alert.AlertType type, String title, String message) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
