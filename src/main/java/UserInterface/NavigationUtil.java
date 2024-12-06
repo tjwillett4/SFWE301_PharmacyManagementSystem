@@ -8,128 +8,71 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class NavigationUtil {
-
-	public static void loadMainDashboard() {
-	    try {
-	        FXMLLoader loader = new FXMLLoader(NavigationUtil.class.getResource("/MainDashboard.fxml"));
+	
+	private static Session curSession = null;
+	
+	private static void stageLoaderFunction(String fxmlFile, ActionEvent event, String title) {
+    	if (curSession == null) 
+    		curSession = new Session();
+		try {
+	        FXMLLoader loader = new FXMLLoader(NavigationUtil.class.getResource(fxmlFile));
 	        Scene scene = new Scene(loader.load());
-	        Stage stage = new Stage();
+	        Stage stage = event == null? 
+	        		new Stage() : 
+	        			((Stage) ((Node) event.getSource()).getScene().getWindow());
 	        stage.setScene(scene);
-	        stage.setTitle("Pharmacy Management System - Dashboard");
+	        stage.setTitle(title);
+	        if (curSession.getCurrentStage() != null) {
+	        	System.out.println("Clossing current stage!!");
+	        	curSession.closeCurrentStage();
+	        }
+	        curSession.setCurrentStage(stage);
 	        stage.show();
-	    } catch (Exception e) {
+		} catch (Exception e) {
 	        e.printStackTrace();
 	    }
 	}
 
+	public static void loadMainDashboard() {
+		stageLoaderFunction("/MainDashboard.fxml", null, "Pharmacy Management System - Dashboard");
+	}
+
     public static void loadLoginScreen(ActionEvent event) {
-    	System.out.println("Navigating to Login Screen...");
-        try {
-            FXMLLoader loader = new FXMLLoader(NavigationUtil.class.getResource("/Login.fxml"));
-            Scene scene = new Scene(loader.load());
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(scene);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    	stageLoaderFunction("/Login.fxml", event, "Pharmacy Management System - Login");
+    }
+    public static void loadLoginScreen() {
+    	stageLoaderFunction("/Login.fxml", null, "Pharmacy Management System - Login");
     }
     
     public static void loadMedicationScreen(ActionEvent event) {
-    	System.out.println("opening medication screen...");
-        try {
-            FXMLLoader loader = new FXMLLoader(NavigationUtil.class.getResource("/MedicationInventory.fxml"));
-            Scene scene = new Scene(loader.load());
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(scene);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    	stageLoaderFunction("/MedicationInventory.fxml", event, "Medication");
     }
     
     public static void loadResetPasswordScreen(ActionEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(NavigationUtil.class.getResource("/ResetPassword.fxml"));
-            Scene scene = new Scene(loader.load());
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(scene);
-            stage.setTitle("Reset Password");
-            stage.show();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    	stageLoaderFunction("/ResetPassword.fxml", event, "Reset Password");
     }
     
     public void loadInventoryManagement(ActionEvent event) {
-        try {
-            Parent root = FXMLLoader.load(getClass().getResource("/InventoryManagement.fxml")); // Ensure the path is correct
-            Stage stage = new Stage();
-            stage.setTitle("Inventory Management");
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    	stageLoaderFunction("/InventoryManagement.fxml", event, "Inventory Management");
     }
 
     public void loadSalesTracking(ActionEvent event) {
-        try {
-            Parent root = FXMLLoader.load(getClass().getResource("/SalesTracking.fxml"));
-            Stage stage = new Stage();
-            stage.setTitle("Sales Tracking");
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    	stageLoaderFunction("/SalesTracking.fxml", event, "Sales Tracking");
     }
 
     public static void loadManagementInterface(ActionEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(NavigationUtil.class.getResource("/ManagementInterface.fxml"));
-            Scene scene = new Scene(loader.load());
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(scene);
-            stage.setTitle("Management Interface");
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.err.println("Error: Unable to load Management Interface.");
-        }
+    	stageLoaderFunction("/ManagementInterface.fxml", event, "Management Interface");
     }
     
     public static void loadTechDashboard(ActionEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(NavigationUtil.class.getResource("/TechDashboard.fxml"));
-            Scene scene = new Scene(loader.load());
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(scene);
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.err.println("Error: Unable to load Tech Dashboard.");
-        }
+    	stageLoaderFunction("/TechDashboard.fxml", event, "Tech Dashboard");
     }
 
     public static void loadCashierDashboard(ActionEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(NavigationUtil.class.getResource("/CashierDashboard.fxml"));
-            Scene scene = new Scene(loader.load());
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(scene);
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.err.println("Error: Unable to load Cashier Dashboard.");
-        }
+    	stageLoaderFunction("/CashierDashboard.fxml", event, "Cashier Dashboard");
     }
 
 	public static void loadPrescriptionTracking(ActionEvent event) {
-	    try {
-	        FXMLLoader loader = new FXMLLoader(NavigationUtil.class.getResource("/PrescriptionTracking.fxml"));
-	        Scene scene = new Scene(loader.load());
-	        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-	        stage.setScene(scene);
-	        stage.setTitle("Prescription Tracking");
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        System.err.println("Error: Unable to load Prescription Tracking.");
-	    }
+		stageLoaderFunction("/PrescriptionTracking.fxml", event, "Prescription Tracking");
 	}
 }

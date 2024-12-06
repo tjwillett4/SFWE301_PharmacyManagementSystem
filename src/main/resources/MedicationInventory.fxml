@@ -35,7 +35,7 @@
             	<Label style="-fx-font-size: 24px;" text="Medication Batch Info" />
                 <TextField fx:id="medicationSupplier" prefWidth="200" promptText="Medication Supplier" />
                 <TextField fx:id="medicationStock" prefWidth="200" promptText="Medication Pill Count" />
-                <TextField fx:id="medicationExpirationDate" prefWidth="200" promptText="Medication Expiration Date" />
+                <TextField fx:id="medicationExpirationDate" prefWidth="200" promptText="Exp. Date: month/day/year" />
 
             </VBox>
             
