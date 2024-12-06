@@ -94,31 +94,53 @@ public class PharmacyInventory {
         mapper.writeValue(Files.newOutputStream(p), medications);
     }
 
+    /**
+     * Handles reading and writing medication inventory to and from an XML file using Jackson library.
+     * Provides utility methods for serialization and deserialization of medication data.
+     */
     private static void writeMedication(ArrayList<Medication> medications) throws Exception {
+        // Locate the pharmacy inventory file path
         Path p = FileHelper.findPharmacyInventoryFile();
+        
+        // Configure Jackson XML mapper
         ObjectMapper mapper = new XmlMapper();
         mapper.registerModule(new JavaTimeModule());
         mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 
+        // Serialize and write the medications list to the file
         mapper.writeValue(Files.newOutputStream(p), medications);
     }
 
+    /**
+     * Reads the pharmacy inventory from an XML file and deserializes it into an ArrayList of Medication objects.
+     * @return ArrayList of Medication objects representing the inventory.
+     * @throws Exception if the file cannot be read or parsed.
+     */
     public static ArrayList<Medication> readPharmacyInventory() throws Exception {
-    	Path p = FileHelper.findPharmacyInventoryFile();
+        // Locate the pharmacy inventory file path
+        Path p = FileHelper.findPharmacyInventoryFile();
+
+        // Check if the file exists; throw an exception if it doesn't
         if (!Files.exists(p)) {
             throw new Exception("Cannot load settings because the settings file path could not be loaded.");
         }
 
+        // If the file is empty, return an empty list
         if (p.toFile().length() == 0) {
             return new ArrayList<>();
         }
 
         try {
+            // Configure Jackson XML mapper
             ObjectMapper mapper = new XmlMapper();
             mapper.registerModule(new JavaTimeModule());
             mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+
+            // Define the type reference for deserialization
             TypeReference<ArrayList<Medication>> typeRef = new TypeReference<>() {};
+
+            // Deserialize and return the list of medications
             return mapper.readValue(Files.newInputStream(p), typeRef);
         } catch (FileNotFoundException e) {
             e.printStackTrace();

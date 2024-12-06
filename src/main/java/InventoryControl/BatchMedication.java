@@ -64,53 +64,80 @@ public class BatchMedication {
         this.stock.set(newStock); // Update the IntegerProperty
         return true;
     }
+	/**
+	 * Getter and setter methods for managing stock, records, arrival date, expiration date, and medication properties.
+	 * Includes JavaFX property methods for binding to UI elements.
+	 */
+
+	// Gets the current stock level
 	public int getStock() {
-        return stock.get();
-    }
+	    return stock.get();
+	}
+
+	// Sets the stock level
 	public void setStock(int stock) {
-        this.stock.set(stock);
-    }
+	    this.stock.set(stock);
+	}
+
+	// Gets the modification records associated with the medication
 	public ArrayList<String> getRecords() {
-		return records;
+	    return records;
 	}
+
+	// Sets the modification records for the medication
 	public void setRecords(ArrayList<String> records) {
-		this.records = records;
-		
+	    this.records = records;
 	}
+
+	// Gets the arrival date of the medication batch
 	public LocalDate getArrivalDate() {
-        return arrivalDate.get();
-    }
+	    return arrivalDate.get();
+	}
+
+	// Sets the arrival date for the medication batch
 	public void setArrivalDate(LocalDate arrivalDate) {
-        this.arrivalDate.set(arrivalDate);
-    }
+	    this.arrivalDate.set(arrivalDate);
+	}
+
+	// Gets the expiration date of the medication batch
 	public LocalDate getExpirationDate() {
-        return expirationDate.get();
-    }
+	    return expirationDate.get();
+	}
+
+	// Sets the expiration date for the medication batch
 	public void setExpirationDate(LocalDate expirationDate) {
-        this.expirationDate.set(expirationDate);
-    }
-	// JavaFX property methods
-    public String getMedicationName() {
-        return medicationName.get();
-    }
-    public IntegerProperty quantityProperty() {
-        return stock;
-    }
-    public ObjectProperty<LocalDate> expirationDateProperty() {
-        return expirationDate;
-    }
+	    this.expirationDate.set(expirationDate);
+	}
 
+	// Gets the medication name
+	public String getMedicationName() {
+	    return medicationName.get();
+	}
 
-    public void setMedicationName(String medicationName) {
-        this.medicationName.set(medicationName);
-    }
+	// Sets the medication name
+	public void setMedicationName(String medicationName) {
+	    this.medicationName.set(medicationName);
+	}
 
-    public StringProperty medicationNameProperty() {
-        return medicationName;
-    }
-    public ObjectProperty<LocalDate> arrivalDateProperty() {
-        return arrivalDate;
-    }
+	// Returns the stock as a JavaFX property for UI bindings
+	public IntegerProperty quantityProperty() {
+	    return stock;
+	}
+
+	// Returns the expiration date as a JavaFX property for UI bindings
+	public ObjectProperty<LocalDate> expirationDateProperty() {
+	    return expirationDate;
+	}
+
+	// Returns the medication name as a JavaFX property for UI bindings
+	public StringProperty medicationNameProperty() {
+	    return medicationName;
+	}
+
+	// Returns the arrival date as a JavaFX property for UI bindings
+	public ObjectProperty<LocalDate> arrivalDateProperty() {
+	    return arrivalDate;
+	}
 	
 	
 }

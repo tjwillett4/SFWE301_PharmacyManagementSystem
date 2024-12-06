@@ -6,32 +6,42 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+/**
+ * The entry point of the Pharmacy Management System application.
+ * - Initializes default accounts at application startup.
+ * - Loads and displays the login screen as the first interface.
+ */
+
 public class App extends Application {
+
     @Override
     public void start(Stage primaryStage) {
         try {
-            // Ensure default accounts are created at the start of the application
+            // Create default accounts at the start of the application
             AccountHandling.createDefaultAccounts();
             System.out.println("Default accounts created successfully.");
         } catch (Exception e) {
+            // Handle exceptions during the creation of default accounts
             e.printStackTrace();
             System.err.println("Error creating default accounts: " + e.getMessage());
         }
 
         try {
-            // Load the login screen
+            // Load and display the login screen
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/Login.fxml"));
             Scene scene = new Scene(loader.load());
             primaryStage.setTitle("Pharmacy Management System");
             primaryStage.setScene(scene);
             primaryStage.show();
         } catch (Exception e) {
+            // Handle exceptions during the loading of the login screen
             e.printStackTrace();
             System.err.println("Error loading the Login screen: " + e.getMessage());
         }
     }
 
     public static void main(String[] args) {
+        // Launch the JavaFX application
         launch(args);
     }
 }
