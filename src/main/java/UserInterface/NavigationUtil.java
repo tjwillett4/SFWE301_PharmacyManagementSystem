@@ -22,16 +22,38 @@ public class NavigationUtil {
 	        			((Stage) ((Node) event.getSource()).getScene().getWindow());
 	        stage.setScene(scene);
 	        stage.setTitle(title);
+	        
+	        //two methods to close previous windows
+	        if (event != null) {
+	        	((Node)(event.getSource())).getScene().getWindow().hide();
+	        }
 	        if (curSession.getCurrentStage() != null) {
 	        	System.out.println("Clossing current stage!!");
 	        	curSession.closeCurrentStage();
 	        }
+
 	        curSession.setCurrentStage(stage);
 	        stage.show();
 		} catch (Exception e) {
 	        e.printStackTrace();
 	    }
 	}
+	
+	private static void stageLoaderFunctionDontClosePrev(String fxmlFile, String title) {
+		try {
+	        FXMLLoader loader = new FXMLLoader(NavigationUtil.class.getResource(fxmlFile));
+	        Scene scene = new Scene(loader.load());
+	        Stage stage = new Stage();
+
+	        stage.setScene(scene);
+	        stage.setTitle(title);
+	       
+	        stage.show();
+		} catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	}
+	
 
 	public static void loadMainDashboard() {
 		stageLoaderFunction("/MainDashboard.fxml", null, "Pharmacy Management System - Dashboard");
@@ -45,7 +67,7 @@ public class NavigationUtil {
     }
     
     public static void loadMedicationScreen(ActionEvent event) {
-    	stageLoaderFunction("/MedicationInventory.fxml", event, "Medication");
+    	stageLoaderFunctionDontClosePrev("/MedicationInventory.fxml", "Medication");
     }
     
     public static void loadResetPasswordScreen(ActionEvent event) {
