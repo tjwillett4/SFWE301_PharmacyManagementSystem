@@ -822,7 +822,7 @@ public class MainDashboardController {
         try {
             TextInputDialog NameDialog = new TextInputDialog();
             NameDialog.setTitle("Add Customer");
-            NameDialog.setHeaderText("Enter Customer First Name:");
+            NameDialog.setHeaderText("Enter Customer Name:");
             NameDialog.setContentText("Name:");
             Optional<String> NameResult = NameDialog.showAndWait();
 
@@ -919,34 +919,48 @@ public class MainDashboardController {
             return;
         }
 
-        // Prompt for updated name
-        TextInputDialog NameDialog = new TextInputDialog(selectedCustomer.getFirstName());
-        NameDialog.setTitle("Update Customer");
-        NameDialog.setHeaderText("Update Name");
-        NameDialog.setContentText("Enter new name:");
+        // Prompt for updated first name
+        TextInputDialog firstNameDialog = new TextInputDialog(selectedCustomer.getFirstName());
+        firstNameDialog.setTitle("Update Customer");
+        firstNameDialog.setHeaderText("Update First Name");
+        firstNameDialog.setContentText("Enter new first name:");
 
-        Optional<String> newName = NameDialog.showAndWait();
-        if (!newName.isPresent() || newName.get().trim().isEmpty()) {
-            showErrorAlert("Error", "Name cannot be empty.");
+        Optional<String> newFirstName = firstNameDialog.showAndWait();
+        if (!newFirstName.isPresent() || newFirstName.get().trim().isEmpty()) {
+            showErrorAlert("Error", "First name cannot be empty.");
             return;
         }
-        
+
+        // Prompt for updated last name
+        TextInputDialog lastNameDialog = new TextInputDialog(selectedCustomer.getLastName());
+        lastNameDialog.setTitle("Update Customer");
+        lastNameDialog.setHeaderText("Update Last Name");
+        lastNameDialog.setContentText("Enter new last name:");
+
+        Optional<String> newLastName = lastNameDialog.showAndWait();
+        if (!newLastName.isPresent() || newLastName.get().trim().isEmpty()) {
+            showErrorAlert("Error", "Last name cannot be empty.");
+            return;
+        }
+
         // Prompt for updated email
         TextInputDialog emailDialog = new TextInputDialog(selectedCustomer.getEmail());
         emailDialog.setTitle("Update Customer");
         emailDialog.setHeaderText("Update Email");
         emailDialog.setContentText("Enter new email:");
+
         Optional<String> newEmail = emailDialog.showAndWait();
         if (!newEmail.isPresent() || newEmail.get().trim().isEmpty()) {
             showErrorAlert("Error", "Email cannot be empty.");
             return;
         }
-        
+
         // Prompt for updated phone number
         TextInputDialog phoneDialog = new TextInputDialog(selectedCustomer.getPhoneNum());
         phoneDialog.setTitle("Update Customer");
         phoneDialog.setHeaderText("Update Phone Number");
         phoneDialog.setContentText("Enter new phone number:");
+
         Optional<String> newPhone = phoneDialog.showAndWait();
         if (!newPhone.isPresent() || newPhone.get().trim().isEmpty()) {
             showErrorAlert("Error", "Phone number cannot be empty.");
@@ -954,9 +968,11 @@ public class MainDashboardController {
         }
 
         // Update the customer object
-        selectedCustomer.setName(newName.get());
+        selectedCustomer.setFirstName(newFirstName.get());
+        selectedCustomer.setLastName(newLastName.get());
         selectedCustomer.setEmail(newEmail.get());
         selectedCustomer.setPhoneNum(newPhone.get());
+
         // Save updated data
         try {
             AccountHandling.saveCustomerData(new ArrayList<>(customerData)); // Save data to file
