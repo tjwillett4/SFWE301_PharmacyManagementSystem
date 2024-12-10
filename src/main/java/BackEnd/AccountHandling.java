@@ -31,11 +31,7 @@ public class AccountHandling {
         return LOCKOUT_COUNT;
     }
 
-
-
 	//Role requirement check. Takes in the empoyee attempting and a list of roles ["manager", "pharamacist"]
-	//TODO: Should this require password?
-	//TODO: Implement this with all account actions. 
 	private static boolean roleVerification(Employee emp, List<Role> roleRequirement){
 		//get the account list
 		ArrayList<Employee> accounts;
@@ -59,9 +55,7 @@ public class AccountHandling {
 		return false;
 	}
 	
-	/**
-     * Creates a default admin account (bypassing encryption)
-     */
+    //Creates a default admin account (bypassing encryption)
 	public static void createDefaultAccounts() throws Exception {
 	    // Define default accounts
 	    List<Employee> defaultAccounts = Arrays.asList(
@@ -117,7 +111,6 @@ public class AccountHandling {
         saveEmployeeStorage(employeeFile, employees);
     }
  
-
     // Read employee storage from a file
     public static ArrayList<Employee> readEmployeeStorage(Path employeeFile) throws Exception {
         if (!Files.exists(employeeFile)) {
@@ -242,13 +235,8 @@ public class AccountHandling {
         return false;
     }
 
-    /**
-     * Handles user login with a simplified check.
-     * returns Exception for file handling errors. 
-     * returns an Employee account with a username containing the error. 
-     * On successful login, return full account. 
-     * 
-     */
+    // Handles user login with a simplified check. returns Exception for file handling errors. 
+    // returns an Employee account with a username containing the error. On successful login, return full account. 
 	public static Employee logIn(String username, String password) throws Exception {
 	    ArrayList<Employee> accounts = readEmployeeStorage(FileHelper.findEmployeeFile());
 	    
@@ -286,8 +274,6 @@ public class AccountHandling {
 	    return new Employee(userNotFound); // Empty Employee on failure
 	}
 
-    
-
     // Helper method to check if an employee exists
     public static boolean employeeExists(String username) throws Exception {
         ArrayList<Employee> employees = readEmployeeStorage(FileHelper.findEmployeeFile());
@@ -300,8 +286,6 @@ public class AccountHandling {
 
         return false;
     }
-
-    
 
 	//Removes an employee from the database
 	public static boolean removeEmployeeAccount(Employee emp, Employee managerAccount) throws Exception {
@@ -327,7 +311,6 @@ public class AccountHandling {
 		return false;
 	}
 	
-	
 	//UnlockAccount
 	public static boolean unlockEmployeeAccount(Employee emp, Employee managerAccount) throws Exception{
 		//check for role requirement
@@ -352,7 +335,6 @@ public class AccountHandling {
 		return false;
 	}
 
-	
 	//updates a user account based on username. Verification done in controller.
 	public static void changeEmployeeAccount(String username, Employee acc) throws Exception {
 	    // Get accounts list
@@ -387,6 +369,16 @@ public class AccountHandling {
 	/*
 	 *  CUSTOMER EDITING
 	 */
+	
+    // Get an employee by username
+    public static Customer getCustomerByName(String name) throws Exception {
+        ArrayList<Customer> customers = readCustomerStorage();
+
+        return customers.stream()
+                .filter(acc -> acc.getNameFirst().equals(name))
+                .findFirst()
+                .orElse(null); // Return null if not found
+    }
 	 public static void removeCustomer(Customer customer) throws Exception {
         Path customerFile = FileHelper.findCustomerFile();
         ArrayList<Customer> customers = readCustomerStorage();
@@ -398,8 +390,6 @@ public class AccountHandling {
             throw new IOException("Customer not found in storage.");
 	    }
 	}
-	
-	
 	
 	/* 
 	 * Employee FILE HANDLING 
@@ -448,7 +438,6 @@ public class AccountHandling {
 		}		
 	}
 	
-
 	/*
 	 * CUSTOMER FILE HANDLING 
 	 */

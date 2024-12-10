@@ -18,6 +18,10 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import BackEnd.FileHelper;
 import Prescriptions.Medication;
 
+/*
+ * Handles retrieval and storage of pharmaceuticals
+ */
+
 public class PharmacyInventory {
 
     /* 
