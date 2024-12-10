@@ -73,6 +73,8 @@ public class Serializer {
 	/* ACCOUNT_INFO HANDLING 
 	 */
 	public static Employee encryptEmployee(Employee emp) throws Exception {
+		return new Employee();
+		/*
 	    String secCode = emp.getSecCodePass();
 	    String pass = emp.getPassword();
 	    StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
@@ -81,18 +83,19 @@ public class Serializer {
 	    // Encrypt fields
 	    emp.setPassword(encryptor.encrypt(emp.getPassword())); // Encrypt password
 	    emp.setSecCodePass(encryptString(secCode, pass));
-	    return emp;
+	    return emp;*/
 	}
 
 	public static Employee decryptEmployee(Employee account, String password) throws Exception {
-	    StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
+		return new Employee();
+	    /*StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
 	    encryptor.setPassword(password); // Use secCodePass for decryption
 
 	    // Decrypt fields
 	    account.setPassword(encryptor.decrypt(account.getPassword())); // Decrypt password
 	    account.setSecCodePass(password); // Retain secCodePass for future operations
 
-	    return account;
+	    return account;*/
 	}
 	
 	

@@ -1,7 +1,6 @@
 package BackEnd;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true) // Ignore any unrecognized fields
 public class Employee extends Account {
@@ -10,7 +9,6 @@ public class Employee extends Account {
     private String contactInfo = "";
     private Role accountRole;
     private int loginAttempts = 0;
-    private String secCodePass = "";
 
     // Default constructor
     public Employee() {
@@ -25,13 +23,7 @@ public class Employee extends Account {
         this.username = username;
         this.password = password;
         this.accountRole = accountRole;
-        this.loginAttempts = 0; // Initialize login attempts to 0
-        try {
-			this.secCodePass = Serializer.generateSerializerString();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} //String used for password encryption. 
+        this.loginAttempts = 0; // Initialize login attempts to 0 
     }
     
     @Override
@@ -93,10 +85,6 @@ public class Employee extends Account {
         this.loginAttempts = loginAttempts;
     }
 
-	public void setSecCodePass(String secCodePass) {
-		this.secCodePass = secCodePass;
-		
-	}
 	
 	public String getContactInfo() {
 	    return contactInfo;
@@ -104,9 +92,5 @@ public class Employee extends Account {
 
 	public void setContactInfo(String contactInfo) {
 	    this.contactInfo = contactInfo;
-	}
-
-	public String getSecCodePass() {
-		return secCodePass;
 	}
 }

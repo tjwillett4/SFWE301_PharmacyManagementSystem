@@ -50,7 +50,6 @@ public class AccountScreenController {
             updatedEmployee.setPassword(newPasswordField.getText()); // Retrieve new password input
             updatedEmployee.setAccountRole(currentUser.getAccountRole()); // Preserve current role
             updatedEmployee.setLoginAttempts(currentUser.getLoginAttempts()); // Preserve login attempt count
-            updatedEmployee.setSecCodePass(currentUser.getSecCodePass()); // Preserve security code
 
             // Update the account in the backend
             AccountHandling.updateEmployeeAccount(username, updatedEmployee);
